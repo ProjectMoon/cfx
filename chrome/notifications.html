@@ -9,37 +9,64 @@
 		<div id="title">CF Notifications</div>
 		<div id="notifications">
 			<div class="row">
-				<div class="type">Unread PMs</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/pm/">
+						Unread PMs
+					</a>
+				</div>
 				<div id="privateMessages" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">Friend Requests</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/profile/friends/#irc">
+						Friend Requests
+					</a>
+				</div>
 				<div id="friendRequests" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">Social Group Requests</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/group.php?do=requests">
+						Social Group Requests
+					</a>
+				</div>
 				<div id="socialGroupRequests" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">Social Group Invites</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/group.php?do=invitations">
+						Social Group Invites
+					</a>
+				</div>
 				<div id="socialGroupInvites" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">New Picture Comments</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/album.php?do=unread">
+						New Picture Comments
+					</a>
+				</div>
 				<div id="newPictureComments" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">Unapproved Picture Comments</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/album.php?do=moderated">
+						Unapproved Picture Comments
+					</a>
+				</div>
 				<div id="unapprovedPictureComments" class="number">-1</div>
 			</div>
 			<div class="row">
-				<div class="type">Unapproved Group Messages</div>
+				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/group.php?do=moderatedgms">
+						Unapproved Group Messages
+					</a>
+				</div>
 				<div id="unapprovedGroupMessages" class="number">-1</div>
 			</div>
 		</div>
 		<script type="text/javascript">
 			User.getNotifications(function(notifications) {
-				//alert(JSON.stringify(notifications));
 				$('#privateMessages').html(notifications.privateMessages);
 				$('#friendRequests').html(notifications.friendRequests);
 				$('#socialGroupRequests').html(notifications.socialGroupRequests);
