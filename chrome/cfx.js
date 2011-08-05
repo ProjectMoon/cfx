@@ -3,6 +3,16 @@ function isOpen() {
 }
 
 $(function() {
+	//Super-Ignore
+	if (Page.isThread()) {
+		$('div.smallfont').each(function() {
+			if ($(this).text().indexOf('is on your ignore list') !== -1) {
+				$(this).closest('div[id^="edit"]').hide();
+			}
+		});
+	}
+	
+	//Report functionality.
 	if (Page.isReport()) {
 		var form = $('#threadtools_menu form[name="threadadminform"]');
 		var url = form.attr('action');

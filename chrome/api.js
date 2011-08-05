@@ -141,3 +141,16 @@ Page = {
 		return found;
 	}
 };
+
+User = {
+	getIgnoreList: function(callback) {
+		$.get('http://www.christianforums.com/profile/foes/', function(dom) {
+			var ignoredUsers = [];
+			$('#ignorelist', dom).find('a').each(function() {
+				ignoredUsers.push($(this).text());
+			});
+			
+			callback(ignoredUsers);
+		});
+	}
+};
