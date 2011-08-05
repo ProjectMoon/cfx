@@ -152,5 +152,37 @@ User = {
 			
 			callback(ignoredUsers);
 		});
+	},
+	
+	getNotifications: function(callback) {
+		$.get('http://www.christianforums.com/pm/', function(dom) {
+			var mapping = {
+				'Unread Private Messages': 'privateMessages',
+				'Incoming Friend Requests': 'friendRequests',
+				'Requests to Join Your Social Groups': 'socialGroupRequests',
+				'Invitations to Join Social Groups': 'socialGroupInvites',
+				'Unread Picture Comments': 'newPictureComments',
+				'Picture Comments Awaiting Approval': 'unapprovedPictureComments',
+				'Group Messages Awaiting Approval': 'unapprovedGroupMessages',
+			};
+			
+			var notifications = {};
+			$(dom).find('#notifications_menu').find('tr:has(.vbmenu_option)')
+				.each(function() {
+					var children = $(this).children();
+					var notificationType = $(children[0]).text();
+					var notificationNumber = $(children[1]).text();
+					notifications[mapping[notificationType]] = + notificationNumber;
+				});
+			
+			//if there are no notifications, the layout will not exist.
+			//but we still must return something.
+			if (JSON.stringify(notifications) === '{}') {
+				for (notificationType in mapping) {
+					notifications[mapping[notificationType]] = 0;
+				}
+			}
+			callback(notifications);
+		});
 	}
 };

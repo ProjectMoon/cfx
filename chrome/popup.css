@@ -1,0 +1,36 @@
+html {
+	min-width: 330px;
+}
+
+body {
+	font-family: Verdana, sans-serif;
+}
+
+#title {
+	width: 100%;
+	background: #D5DEE3;
+	text-align: center;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+#notifications {
+	width: 100%;
+}
+
+#notifications .row {
+	border-bottom: 1px solid #EEEEEE;
+	width: 100%;
+	padding-bottom: 3px;
+	padding-top: 3px;
+	overflow: hidden;
+}
+
+#notifications .type {
+	float: left;
+}
+
+#notifications .number {
+	float: right;
+	font-weight: bold;
+}
