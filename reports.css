@@ -1,0 +1,19 @@
+#reportBar {
+	background: whitesmoke;
+	border-left: 1px solid silver;
+	border-right: 1px solid silver;
+	min-height: 30px;
+	padding: 3px;
+}
+
+#closeReport {
+	float: right;
+}
+
+#openReport {
+	float: right;
+}
+
+#statusUpdate {
+	color: green;
+}
