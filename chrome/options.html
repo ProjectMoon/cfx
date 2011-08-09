@@ -1,21 +1,63 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link href="options.css" rel="style" />
+		<link rel="stylesheet" href="options.css" />
+		<link rel="stylesheet" href="jquery-ui/css/smoothness/jquery-ui-1.8.15.custom.css" />
 		<script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript" src="jquery-ui/js/jquery-ui-1.8.15.custom.min.js"></script>
+		<script type="text/javascript" src="jstorage.js"></script>
 		<script type="text/javascript" src="options.js"></script>
 		<script type="text/javascript" src="api.js"></script>
 	</head>
 	<body>
-		<script type="text/javascript">
-		$(function() {
-			User.ifIsModerator(function(id) {
-				alert('derp');
-			});
-		});
-		</script>
-		<div id="modhatContainer">
-			<textarea id="modhat"></textarea>
+		<div id="statusMessage">
+			Status Message Here.
+		</div>
+		<div id="tabs">
+			<ul>
+				<li><a href="#general">General</a></li>
+				<li><a href="#staff">Staff Options</a></li>
+			</ul>
+			
+			<div id="general">
+				<p id="intro">
+					Here you can change various options for CF Extended. There is 
+					no need for a save button; any changes you make will be saved
+					automatically.
+				</p>
+				<div id="generalOptions">
+					<table>
+						<tr>
+							<td>Notification Polling:</td>
+							<td>
+								<input id="notificationRate" type="text" data-option="notificationRate" data-type="int"/>
+								minutes
+							</td>
+						</tr>
+						<tr>
+							<td>Super Ignore:</td>
+							<td>
+								<input id="superIgnore" type="checkbox" data-option="superIgnore" data-type="boolean" />
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+			<div id="staff">
+				<div id="notStaff">
+					You are not part of CF staff.
+				</div>
+				<div id="isStaff">
+					<div>
+						<span>Mod Hat</span>
+						<span class="italic">(Moderators Only)</span>
+					</div>
+					<div>
+						<textarea id="modhat" data-option="modhat" data-type="string"></textarea>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
