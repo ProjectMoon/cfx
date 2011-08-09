@@ -19,14 +19,21 @@ body {
 	display: none;
 }
 
-#modhatContainer {
-
+#modhat {
+	margin-top: 10px;
 }
 
+#generalOptions td {
+	padding: 2px;
+}
 
 
 .italic {
 	font-style: italic;
+}
+
+.bold {
+	font-weight: bold;
 }
 
 /* option styles */

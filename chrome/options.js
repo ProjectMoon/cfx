@@ -30,13 +30,16 @@ function loadOptions() {
 	}
 }
 
+var statusMessageTimer = null;
+
 function showStatusMessage(text) {
 	$('#statusMessage').hide();
 	$('#statusMessage').html(text);
 	$('#statusMessage').show();
 	
-	setTimeout(function() {
+	statusMessageTimer = setTimeout(function() {
 		$('#statusMessage').fadeOut(1000);
+		statusMessageTimer = null;
 	}, 2000);
 }
 
@@ -44,6 +47,15 @@ function showPermanentMessage(text) {
 	$('#statusMessage').hide();
 	$('#statusMessage').html(text);
 	$('#statusMessage').show();
+}
+
+function hidePermanentMessage() {
+	if (statusMessageTimer == null) {
+		statusMessageTimer = setTimeout(function() {
+			$('#statusMessage').fadeOut(1000);
+			statusMessageTimer = null;
+		}, 2000);
+	}
 }
 
 function displayOptions() {
@@ -71,6 +83,13 @@ function bindEvents() {
 	$('input, textarea').focus(function() {
 		showPermanentMessage('Changes not yet saved.');
 	});
+	
+	//Acts weird. disabled for now.
+	/*
+	$('input, textarea').focus(function() {
+		hidePermanentMessage();
+	});
+	*/
 	
 	$('input, textarea').change(function() {
 		var key = $(this).attr('data-option');

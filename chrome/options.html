@@ -17,6 +17,7 @@
 			<ul>
 				<li><a href="#general">General</a></li>
 				<li><a href="#staff">Staff Options</a></li>
+				<li><a href="#cloud">Cloud Sync</a></li>
 			</ul>
 			
 			<div id="general">
@@ -28,7 +29,7 @@
 				<div id="generalOptions">
 					<table>
 						<tr>
-							<td>Notification Polling:</td>
+							<td>Notification Rate:</td>
 							<td>
 								<input id="notificationRate" type="text" data-option="notificationRate" data-type="int"/>
 								minutes
@@ -50,13 +51,23 @@
 				</div>
 				<div id="isStaff">
 					<div>
-						<span>Mod Hat</span>
-						<span class="italic">(Moderators Only)</span>
+						<span class="bold">Mod Hat</span>
+					</div>
+					<div>
+						Please input a "mod hat" template. This enables the use of the mod hat button
+						on the quick reply toolbar. This is not a rich text editor. Use regular BBCode
+						inside the textbox (e.g. [b]bold text[/b], etc).
 					</div>
 					<div>
 						<textarea id="modhat" data-option="modhat" data-type="string"></textarea>
 					</div>
 				</div>
+			</div>
+			
+			<div id="cloud">
+				This functionality is not yet available. When it is done, you will be able to opt-in to
+				the TFX (Thermetics Forums Extensions) cloud service to synchronize your extension settings
+				across multiple devices.
 			</div>
 		</div>
 	</body>
