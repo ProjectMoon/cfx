@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link href="options.css" rel="style" />
 		<script type="text/javascript" src="jquery.min.js"></script>
 		<script type="text/javascript" src="options.js"></script>
 		<script type="text/javascript" src="api.js"></script>
@@ -8,11 +9,13 @@
 	<body>
 		<script type="text/javascript">
 		$(function() {
-			User.getUserGroups(function(id) {
-				alert(id);
+			User.ifIsModerator(function(id) {
+				alert('derp');
 			});
 		});
 		</script>
-		<textarea id="modhat"></textarea>
+		<div id="modhatContainer">
+			<textarea id="modhat"></textarea>
+		</div>
 	</body>
 </html>

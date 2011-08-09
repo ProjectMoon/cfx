@@ -18,5 +18,7 @@ function load() {
 }
 
 $(function() {
-	
+	User.ifIsModerator(function() {
+		
+	});
 });

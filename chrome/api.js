@@ -158,12 +158,29 @@ User = {
 		User.getUserID(function(id) {
 			$.get('http://www.christianforums.com/users/' + id + '/', function(dom) {
 				var groups = [];
+				
 				$('#priv_usergroup_list', dom).children('li').each(function(i, li) {
 					var group = $(li).text().trim();
 					groups.push(group);
 				});
+				
 				callback(groups);
 			});
+		});
+	},
+	
+	ifIsModerator: function(callback) {
+		var modGroups = [ 'Trainee Moderator', 'Moderators', 'Senior Moderators', 
+							'Supervisors', 'CF Staff Trainer', 'Cahplaincy', 
+							'Administrators', 'CEO\'s Advisors', 'Superadministrators' ];
+							
+		User.getUserGroups(function(groups) {
+			for (var c = 0; c < groups.length; c++) {
+				if (modGroups.indexOf(groups[c]) !== -1) {
+					callback();
+					break;
+				}
+			}
 		});
 	},
 	

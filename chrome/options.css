@@ -1,0 +1,12 @@
+body {
+	font-family: Verdana, sans-serif;
+}
+
+#modhatArea {
+	display: none;
+}
+
+#modhat {
+	width: 300px;
+	height: 250px;
+}
