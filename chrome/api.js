@@ -90,12 +90,13 @@ Thread = {
                 
 		//Move the thread.
 		proxyFrame.load(function() {
-		var proxyForm = $(this).contents().find('form[name="vbform"]');
+			var proxyForm = $(this).contents().find('form[name="vbform"]');
 			$('select[name="destforumid"]', proxyForm).find('option:contains(' + toForum + ')').attr('selected', 'selected');
 			
 			if (!leaveRedirect) {
-				$('radio[name="redirect"][value="none"]').attr('checked', 'checked');
+				$('#rb_redirect_none', proxyForm).click();
 			}
+			
 			proxyForm.ajaxSubmit(callback);                         
 		});
 	}
