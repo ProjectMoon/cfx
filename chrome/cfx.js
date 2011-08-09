@@ -6,7 +6,7 @@ $(function() {
 	//Super ignore
 	Options.getOptions(function(options) {
 		if (options.superIgnore) {
-			if (Page.isThread()) {
+			if (Page.isThread() && !Page.isReport()) {
 				$('div.smallfont').each(function() {
 					if ($(this).text().indexOf('is on your ignore list') !== -1) {
 						$(this).closest('div[id^="edit"]').hide();
