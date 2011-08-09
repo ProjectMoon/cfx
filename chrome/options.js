@@ -11,6 +11,11 @@ function parseBoolean(text) {
 }
 
 function saveOptions() {
+	//some validation
+	if (options.notificationRate < 1) {
+		options.notificationRate = 1;
+	}
+	
 	$.jStorage.set('options', options);
 }
 

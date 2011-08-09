@@ -17,7 +17,7 @@
 		{
 			"matches": [ "http://www.christianforums.com/*" ],
 			"css": [ "reports.css" ],
-			"js": [ "jquery.min.js", "jquery.form.js", "api.js", "cfx.js" ]
+			"js": [ "jquery.min.js", "jquery.form.js", "jstorage.js", "api.js", "cfx.js" ]
 		}
 	], 
 	"permissions": [

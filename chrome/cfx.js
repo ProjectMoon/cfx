@@ -3,14 +3,18 @@ function isOpen() {
 }
 
 $(function() {
-	//Super-Ignore
-	if (Page.isThread()) {
-		$('div.smallfont').each(function() {
-			if ($(this).text().indexOf('is on your ignore list') !== -1) {
-				$(this).closest('div[id^="edit"]').hide();
+	//Super ignore
+	Options.getOptions(function(options) {
+		if (options.superIgnore) {
+			if (Page.isThread()) {
+				$('div.smallfont').each(function() {
+					if ($(this).text().indexOf('is on your ignore list') !== -1) {
+						$(this).closest('div[id^="edit"]').hide();
+					}
+				});
 			}
-		});
-	}
+		}
+	});
 	
 	//Report functionality.
 	if (Page.isReport()) {

@@ -1,3 +1,24 @@
+Options = {
+	get defaults() {
+		return {
+			notificationRate: 1,
+			modhat: '',
+			superIgnore: true
+		};
+	},
+	
+	get user() {
+		$.jStorage.reInit(); //in case options changed.
+		return $.jStorage.get('options', Options.defaults)
+	},
+	
+	getOptions: function(callback) {
+		chrome.extension.sendRequest({ method: 'options' }, function(options) {
+			callback(options);
+		});
+	}
+};
+
 Thread = {
 	_toolsMenu: null,
         

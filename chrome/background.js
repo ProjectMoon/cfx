@@ -19,9 +19,22 @@ $(function() {
 				});	
 			}
 		});
+		
+		setTimeout(updateBadge, Options.user.notificationRate * 60 * 1000);
 	}
 	
-	//Initial update, and then once per minute.
+	//Initial update, and then once per X minutes, as specified by
+	//options.notificationRate.
 	updateBadge();
-	setInterval(updateBadge, 60000);
+	
+	//Listener to send options to content script
+	chrome.extension.onRequest.addListener(function(req, sender, sendResponse) {
+		//$.jStorage.reInit(); //in case options changed.
+		if (req.method === 'options') {
+			sendResponse(Options.user);
+		}
+		else {
+			sendResponse({});
+		}
+	});
 });
