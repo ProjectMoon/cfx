@@ -144,6 +144,29 @@ Page = {
 };
 
 User = {
+	getUserID: function(callback) {
+		$.get('http://www.christianforums.com/faq.php?faq=gospel', function(dom) {
+			var href = $('#usercptools_menu', dom).find('a:contains(Your Profile)').attr('href');
+			var start = href.indexOf('/') + 1;
+			var end = href.indexOf('/', start);
+			var id = href.substring(start , end);
+			callback(id);
+		});
+	},
+	
+	getUserGroups: function(callback) {
+		User.getUserID(function(id) {
+			$.get('http://www.christianforums.com/users/' + id + '/', function(dom) {
+				var groups = [];
+				$('#priv_usergroup_list', dom).children('li').each(function(i, li) {
+					var group = $(li).text().trim();
+					groups.push(group);
+				});
+				callback(groups);
+			});
+		});
+	},
+	
 	getIgnoreList: function(callback) {
 		$.get('http://www.christianforums.com/profile/foes/', function(dom) {
 			var ignoredUsers = [];

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript" src="options.js"></script>
+		<script type="text/javascript" src="api.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+		$(function() {
+			User.getUserGroups(function(id) {
+				alert(id);
+			});
+		});
+		</script>
+		<textarea id="modhat"></textarea>
+	</body>
+</html>
