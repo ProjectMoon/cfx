@@ -15,16 +15,22 @@
 	font-weight: bold;
 	color: white;
 	cursor: pointer;
+	box-sizing: border-box;
 }
 
+/* contains textbox */
 #chatboxTextEntry {
 	width: 100%;
+	padding-left: 3px;
+	padding-right: 3px; /* where's the extra 3px coming from? */
+	box-sizing: border-box;
+	display: none;
 }
 
 /* the input field */
 #chatboxText {
 	width: 100%;
-	display: none;
+	border: 1px solid silver;
 }
 
 #chatboxMessages {
@@ -35,6 +41,7 @@
 	overflow-x: hidden;
 	display: none;
 	font-size: 1.1em; /* for some reason the text is small, so make it bigger */
+	box-sizing: border-box;
 }
 
 .chat {

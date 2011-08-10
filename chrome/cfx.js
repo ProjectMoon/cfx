@@ -132,7 +132,7 @@ function createUniversalChatbox() {
 	var timer = null;
 	cbTitle.click(function() {
 		cb.toggle();
-		entryBox.toggle();
+		textEntry.toggle();
 		
 		if (cb.is(':visible')) {			
 			//once for opening, then every 5 seconds after.
