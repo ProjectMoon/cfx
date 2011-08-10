@@ -73,7 +73,7 @@ $(function() {
 					
 					//Load close/open report button.
 					if (isOpen()) {
-						$('#reportBar').append('<button id="closeReport">Close Report</button>');
+						$('#reportBar').append('<button id="closeReport">Archive Report</button>');
 						$('#closeReport').click(function() {
 							var self = this;
 							$(self).attr('disabled', 'disabled');
