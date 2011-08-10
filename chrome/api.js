@@ -1,10 +1,9 @@
 Options = {
-	get defaults() {
-		return {
-			notificationRate: 1,
-			modhat: '',
-			superIgnore: true
-		};
+	defaults: {
+		notificationRate: 1,
+		modhat: '',
+		superIgnore: true,
+		universalChatbox: true
 	},
 	
 	get user() {

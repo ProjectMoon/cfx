@@ -1,10 +1,6 @@
 var options = {};
 
-var defaults = {
-	notificationRate: 1,
-	modhat: '',
-	superIgnore: true
-};
+var defaults = Options.defaults;
 
 function parseBoolean(text) {
 	return (/^true$/i).test(text);
@@ -62,6 +58,7 @@ function displayOptions() {
 	$('#modhat').val(options.modhat);
 	$('#notificationRate').val(options.notificationRate);
 	$('#superIgnore').attr('checked', options.superIgnore);
+	$('#universalChatbox').attr('checked', options.universalChatbox);
 }
 
 $(function() {

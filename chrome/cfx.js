@@ -4,7 +4,7 @@ function isOpen() {
 
 $(function() {
 	Chatbox.getChats(function(chats) {
-		alert(JSON.stringify(chats));
+		//alert(JSON.stringify(chats));
 	});
 		
 	
