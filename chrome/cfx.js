@@ -3,6 +3,12 @@ function isOpen() {
 }
 
 $(function() {
+	Chatbox.getChats(function(chats) {
+		alert(JSON.stringify(chats));
+	});
+		
+	
+	
 	Options.getOptions(function(options) {
 		//stuff for everyone.
 		if (options.superIgnore) {

@@ -19,6 +19,78 @@ Options = {
 	}
 };
 
+Security = {
+	getSecurityToken: function(callback) {
+		//set up security grabber if not present.
+		if ($('#securityGrabber').length == 0) {
+			var securityGrabber = $('<div id="securityGrabber"></div>');
+			$('body').append(securityGrabber);
+	
+			var script = $('<script></script>');
+			script.attr('src', chrome.extension.getURL('security_grabber.js'));
+			$('body').append(script);
+		}
+		
+		$('#securityGrabber').one('security', function() {
+			var securityToken = $(this).html().trim();
+			callback(securityToken);
+		});
+		
+		//fire event
+		//setTimeout 0 forces the call to be asynchronous.
+		//this means security_grabber.js will have finished loading if this is the first load.
+		location.href = 'javascript:setTimeout(function() { fireSecurityEvent(); }, 0);';
+	}
+};
+
+Chatbox = {
+	getChats: function(callback) {
+		Security.getSecurityToken(function(token) {
+			var url = 'mgc_cb_evo_ajax.php';
+			var data = {
+				do: 'ajax_refresh_chat',
+				status: 'open',
+				channel_id: '0',
+				location: 'full',
+				first_load: '0',
+				securitytoken: token,
+				s: ''
+			};
+			
+			$.post(url, data, function(chatDOM) {
+				var html = $('chatbox_content', chatDOM).text();
+				//html = $('<div></div>').html(html).text();
+				
+				//2 = timestamp
+				//3 = username
+				//4 = message
+				var column = 0;
+				var currChatEntry = {};
+				var entries = [];
+				$(html).find('tr.alt2').children('td').each(function(i, td) {
+					if (column == 2) {
+						currChatEntry.timestamp = $(td).text().trim();
+					}
+					else if (column == 3) {
+						currChatEntry.user = $(td).text().trim();
+					}
+					else if (column == 4) {
+						currChatEntry.message = $(td).text().trim();
+						entries.push(currChatEntry);
+						currChatEntry = {};
+						column = 0;
+						return;
+					}
+					
+					column++;
+				});
+				
+				callback(entries);
+			});
+		});
+	}
+};
+
 Thread = {
 	_toolsMenu: null,
         
