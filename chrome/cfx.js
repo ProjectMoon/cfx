@@ -37,7 +37,7 @@ $(function() {
 				
 				img.click(function() {
 					if (options.modhat.length !== 0) {
-						Thread.quickReply(options.modhat);
+						Thread.fillReply(options.modhat);
 					}
 					else {
 						alert('You have no modhat template set up. Please visit the options page.');
@@ -106,7 +106,7 @@ function createUniversalChatbox() {
 	var textEntry = $('<div id="chatboxTextEntry"></div>');
 	var cb = $('<div id="chatboxMessages"><div class="loading">Loading...</div></div>');
 	
-	//entry box
+	//entry box appending and event.
 	var entryBox = $('<input id="chatboxText" type="text" />');
 	textEntry.append(entryBox);
 	

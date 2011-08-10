@@ -122,6 +122,17 @@ Thread = {
                 
 		$('#qr_submit').click();
 	},
+	
+	fillReply: function(message) {
+		//whether to use rich text editor iframe or the textarea.
+		if ($('#vB_Editor_QR_iframe').is(':visible')) {
+			message = message.replace('\n', '<br>');
+			$('#vB_Editor_QR_iframe')[0].contentWindow.document.execCommand('insertHTML', null, message);
+		}
+		else {
+			$('#vB_Editor_QR_textarea').val(message);
+		}
+	},
         
 	getID: function() {
 		var href = location.href;
