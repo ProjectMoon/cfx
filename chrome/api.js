@@ -36,9 +36,9 @@ Security = {
 		});
 		
 		//fire event
-		//setTimeout 0 forces the call to be asynchronous.
-		//this means security_grabber.js will have finished loading if this is the first load.
-		location.href = 'javascript:setTimeout(function() { fireSecurityEvent(); }, 0);';
+		//force call to be async... this is a bit ghetto, but oh well.
+		//we must wait until fireSecurityEvent exists.
+		location.href = 'javascript:function fire(){if(typeof fireSecurityEvent !== "undefined"){fireSecurityEvent();}else{setTimeout(fire, 0);}}fire();';
 	}
 };
 
@@ -58,8 +58,6 @@ Chatbox = {
 			
 			$.post(url, data, function(chatDOM) {
 				var html = $('chatbox_content', chatDOM).text();
-				//html = $('<div></div>').html(html).text();
-				
 				//2 = timestamp
 				//3 = username
 				//4 = message
@@ -72,6 +70,8 @@ Chatbox = {
 					}
 					else if (column == 3) {
 						currChatEntry.user = $(td).text().trim();
+						//remove <>s, leaving "user".
+						currChatEntry.user = currChatEntry.user.substring(1, currChatEntry.user.length - 1);
 					}
 					else if (column == 4) {
 						currChatEntry.message = $(td).text().trim();

@@ -2,13 +2,7 @@ function isOpen() {
 	return Page.containsBreadcrumb('Finished Reports') === false;
 }
 
-$(function() {
-	Chatbox.getChats(function(chats) {
-		//alert(JSON.stringify(chats));
-	});
-		
-	
-	
+$(function() {	
 	Options.getOptions(function(options) {
 		//stuff for everyone.
 		if (options.superIgnore) {
@@ -19,6 +13,10 @@ $(function() {
 					}
 				});
 			}
+		}
+		
+		if (options.universalChatbox) {
+			createUniversalChatbox();
 		}
 		
 		//moderator functionality.
@@ -100,5 +98,47 @@ $(function() {
 			}
 		});
 	});	
-	
 });
+
+function createUniversalChatbox() {
+	var chatbox = $('<div id="chatbox"></div>');
+	var cbTitle = $('<div id="chatboxTitle">Chatbox</div>');
+	var cb = $('<div id="chatboxMessages"><div class="loading">Loading...</div></div>');
+	
+	chatbox.append(cbTitle);
+	chatbox.append(cb);
+	$('body').append(chatbox);
+	
+	var timer = null;
+	
+	cbTitle.click(function() {
+		cb.toggle();
+		
+		if (cb.is(':visible')) {
+			function refresh() {
+				var chatDivs = [];
+				Chatbox.getChats(function(chats) {
+					chats.forEach(function(chat) {
+						var chatDiv = $('<div class="chat"></div>');
+						var user = $('<div class="user"></div>').text(chat.user);
+						var message = $('<div class="message"></div>').text(chat.message);
+						
+						chatDiv.append(user);
+						chatDiv.append(message);
+						chatDivs.push(chatDiv);
+					});
+					
+					cb.empty();
+					chatDivs.forEach(function(chatDiv) {
+						cb.append(chatDiv);
+					});
+				});
+			}
+			refresh();
+			timer = setInterval(refresh, 5000);
+		}
+		else {
+			clearInterval(timer);
+		}
+	});
+}

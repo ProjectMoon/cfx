@@ -16,7 +16,7 @@
 	"content_scripts": [
 		{
 			"matches": [ "http://www.christianforums.com/*" ],
-			"css": [ "reports.css" ],
+			"css": [ "reports.css", "universalChatbox.css" ],
 			"js": [ "jquery.min.js", "jquery.form.js", "jstorage.js", "api.js", "cfx.js" ]
 		}
 	], 

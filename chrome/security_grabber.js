@@ -1,7 +1,10 @@
 /*
  * Grabs security token for use with the chat AJAX.
  * Runs in DOM context, so we must send a custom event
- * back to the extension...
+ * back to the extension.
+ * 
+ * The fireSecurityEvent() is called from the extension with
+ * location.href.
  */
 
 var event = document.createEvent('Event');
