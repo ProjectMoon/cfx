@@ -103,42 +103,67 @@ $(function() {
 function createUniversalChatbox() {
 	var chatbox = $('<div id="chatbox"></div>');
 	var cbTitle = $('<div id="chatboxTitle">Chatbox</div>');
+	var textEntry = $('<div id="chatboxTextEntry"></div>');
 	var cb = $('<div id="chatboxMessages"><div class="loading">Loading...</div></div>');
 	
+	//entry box
+	var entryBox = $('<input id="chatboxText" type="text" />');
+	textEntry.append(entryBox);
+	
+	entryBox.keydown(function(event) {
+		if (event.keyCode == 13) {
+			var text = $(this).val();
+			$(this).val('');
+			
+			Chatbox.sendChat(text, function() {
+				refresh();
+			});
+		}
+	});
+	
+	//append everything else.
 	chatbox.append(cbTitle);
+	chatbox.append(textEntry);
 	chatbox.append(cb);
 	$('body').append(chatbox);
 	
+	//only submit ajax requests when the box is open.
+	//otherwise, we do nothing.
 	var timer = null;
-	
 	cbTitle.click(function() {
 		cb.toggle();
+		entryBox.toggle();
 		
-		if (cb.is(':visible')) {
-			function refresh() {
-				var chatDivs = [];
-				Chatbox.getChats(function(chats) {
-					chats.forEach(function(chat) {
-						var chatDiv = $('<div class="chat"></div>');
-						var user = $('<div class="user"></div>').text(chat.user);
-						var message = $('<div class="message"></div>').text(chat.message);
-						
-						chatDiv.append(user);
-						chatDiv.append(message);
-						chatDivs.push(chatDiv);
-					});
-					
-					cb.empty();
-					chatDivs.forEach(function(chatDiv) {
-						cb.append(chatDiv);
-					});
-				});
-			}
+		if (cb.is(':visible')) {			
+			//once for opening, then every 5 seconds after.
 			refresh();
 			timer = setInterval(refresh, 5000);
 		}
 		else {
 			clearInterval(timer);
 		}
+	});
+}
+
+function refresh() {
+	var cb = $('#chatboxMessages');
+	
+	var chatDivs = [];
+	Chatbox.getChats(function(chats) {
+		chats.forEach(function(chat) {
+			var chatDiv = $('<div class="chat"></div>');
+			var user = $('<div class="user"></div>').text(chat.user);
+			var message = $('<div class="message"></div>').text(chat.message);
+			
+			chatDiv.append(user);
+			chatDiv.append(message);
+			chatDivs.push(chatDiv);
+		});
+		
+		//doing it this way prevents content flickering.
+		cb.empty();
+		chatDivs.forEach(function(chatDiv) {
+			cb.append(chatDiv);
+		});
 	});
 }

@@ -14,6 +14,17 @@
 	padding: 3px;
 	font-weight: bold;
 	color: white;
+	cursor: pointer;
+}
+
+#chatboxTextEntry {
+	width: 100%;
+}
+
+/* the input field */
+#chatboxText {
+	width: 100%;
+	display: none;
 }
 
 #chatboxMessages {
@@ -23,10 +34,12 @@
 	overflow: auto;
 	overflow-x: hidden;
 	display: none;
+	font-size: 1.1em; /* for some reason the text is small, so make it bigger */
 }
 
 .chat {
 	width: 100%;
+	padding-bottom: 3px;
 	border-bottom: 1px solid silver;
 }
 

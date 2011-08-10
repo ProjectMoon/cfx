@@ -87,6 +87,23 @@ Chatbox = {
 				callback(entries);
 			});
 		});
+	},
+	
+	sendChat: function(chat, callback) {
+		Security.getSecurityToken(function(token) {
+			var url = 'mgc_cb_evo_ajax.php';
+			var data = {
+				do: 'ajax_chat',
+				channel_id: '0',
+				chat: chat,
+				securitytoken: token,
+				s: ''
+			};
+			
+			$.post(url, data, function(chatDOM) {
+				callback();
+			});
+		});
 	}
 };
 
