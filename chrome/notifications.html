@@ -18,6 +18,14 @@
 			</div>
 			<div class="row">
 				<div class="type">
+					<a target="_blank" id="userProfileLink">
+						Unread Visitor Messages
+					</a>
+				</div>
+				<div id="visitorMessages" class="number">-1</div>
+			</div>
+			<div class="row">
+				<div class="type">
 					<a target="_blank" href="http://www.christianforums.com/profile/friends/#irc">
 						Friend Requests
 					</a>
@@ -66,14 +74,19 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-			User.getNotifications(function(notifications) {
-				$('#privateMessages').html(notifications.privateMessages);
-				$('#friendRequests').html(notifications.friendRequests);
-				$('#socialGroupRequests').html(notifications.socialGroupRequests);
-				$('#socialGroupInvites').html(notifications.socialGroupInvites);
-				$('#newPictureComments').html(notifications.newPictureComments);
-				$('#unapprovedPictureComments').html(notifications.unapprovedPictureComments);
-				$('#unapprovedGroupMessages').html(notifications.unapprovedGroupMessages);
+			User.getUserID(function(id) {
+				$('#userProfileLink').attr('href', 'http://www.christianforums.com/users/' + id + '/');
+				
+				User.getNotifications(function(notifications) {
+					$('#privateMessages').html(notifications.privateMessages);
+					$('#friendRequests').html(notifications.friendRequests);
+					$('#socialGroupRequests').html(notifications.socialGroupRequests);
+					$('#socialGroupInvites').html(notifications.socialGroupInvites);
+					$('#newPictureComments').html(notifications.newPictureComments);
+					$('#unapprovedPictureComments').html(notifications.unapprovedPictureComments);
+					$('#unapprovedGroupMessages').html(notifications.unapprovedGroupMessages);
+					$('#visitorMessages').html(notifications.visitorMessages);
+				});
 			});
 		</script>
 	</body>

@@ -325,6 +325,7 @@ User = {
 				'Unread Picture Comments': 'newPictureComments',
 				'Picture Comments Awaiting Approval': 'unapprovedPictureComments',
 				'Group Messages Awaiting Approval': 'unapprovedGroupMessages',
+				'Unread Profile Visitor Messages': 'visitorMessages'
 			};
 			
 			var notifications = {};
