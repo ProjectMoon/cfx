@@ -28,7 +28,7 @@ $(function() {
 		User.ifIsModerator(function() {
 			modhatButton();
 			reportEnhancements();
-		}); //end User.ifIsModerator
+		});
 	});	
 });
 
