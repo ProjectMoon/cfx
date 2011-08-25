@@ -84,7 +84,7 @@ function deletionPMs() {
 			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
-					var message = 'The PM you entered will be sent to the following users: ' + usernames;
+					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames;
 					message += '\n\nAre you SURE you want to do this?';
 					
 					if (confirm(message)) {
