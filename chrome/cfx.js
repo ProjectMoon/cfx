@@ -44,16 +44,17 @@ function deletionPMs() {
 				.text()
 				.trim();
 				
+			var postID = $(this).closest('div[id^=edit]').attr('id').substring(4); //gets rid of "edit"
+				
 			//add/remove user from list.
 			if ($(this).is(':checked')) {
-				var pmUsers = State.getState('pmUsers') || [];
-				pmUsers.push(username);
+				var pmUsers = State.getState('pmUsers') || {};
+				pmUsers[postID] = username;
 				State.setState('pmUsers', pmUsers);
 			}
 			else {
-				var pmUsers = State.getState('pmUsers') || [];
-				var index = pmUsers.indexOf(username);
-				pmUsers.splice(index, 1);
+				var pmUsers = State.getState('pmUsers') || {};
+				delete pmUsers[postID];
 				State.setState('pmUsers', pmUsers);
 			}
 		});
@@ -67,21 +68,20 @@ function deletionPMs() {
 		html += '<textarea id="deletepm"></textarea>';
 		$('input[name="deletereason"]').parent().html(html);
 		
-		var usernames = State.getState('pmUsers') || [];
-		if (usernames.length > 0) {
-			//flatten out list of usernames first.
-			//can't send a single PM to the same person twice...
-			var unique = [];
-				
-			for (var c = 0; c < usernames.length; c++) {
-				var value = usernames[c];
-				if (unique.indexOf(value) === -1) {
-					unique.push(value);
-				}
+		//using a post ID -> username map ensures that even we have extra junk in the map,
+		//we will always get the correct usernames to PM for this particular deletion.
+		var pmUsers = State.getState('pmUsers') || {};
+		var postIDs = $('input[name=postids]').val().split(',');
+		var usernames = [];
+		
+		for (var c = 0; c < postIDs.length; c++) {
+			var username = pmUsers[postIDs[c]];
+			if (usernames.indexOf(username) === -1) {
+				usernames.push(username);
 			}
-			
-			usernames = unique;
-			
+		}
+		
+		if (usernames.length > 0) {			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
 					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames;
@@ -91,7 +91,7 @@ function deletionPMs() {
 						PrivateMessages.send(usernames, 'A post of yours has been deleted',
 							$('#deletepm').val(),
 							function() {
-								State.setState('pmUsers', []); //clear out for future deletes.
+								State.setState('pmUsers', {}); //clear out for future deletes.
 								$('#deletepm').remove(); //don't want to increase server req size.
 								$('form[name="vbform"]').submit();
 							});
