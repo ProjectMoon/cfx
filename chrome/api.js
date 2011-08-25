@@ -42,6 +42,16 @@ Security = {
 	}
 };
 
+State = {
+	setState: function(state, value) {
+		$.jStorage.set('state.' + state, value);
+	},
+	
+	getState: function(state) {
+		return $.jStorage.get('state.' + state);
+	}
+}
+
 Chatbox = {
 	getChats: function(callback) {
 		Security.getSecurityToken(function(token) {

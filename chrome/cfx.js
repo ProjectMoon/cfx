@@ -138,11 +138,18 @@ function createUniversalChatbox() {
 			//once for opening, then every 5 seconds after.
 			refresh();
 			timer = setInterval(refresh, 5000);
+			State.setState('chatbox.open', true);
 		}
 		else {
 			clearInterval(timer);
+			State.setState('chatbox.open', false);
 		}
 	});
+	
+	//if the chatbox was open on the previous page, make it stay open.
+	if (State.getState('chatbox.open')) {
+		cbTitle.click(); //since it's closed by default, just "click" it.
+	}
 }
 
 function refresh() {
