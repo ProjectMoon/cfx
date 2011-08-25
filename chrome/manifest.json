@@ -1,6 +1,6 @@
 {
 	"name": "Christian Forums Extended",
-	"version": "2.6",
+	"version": "2.7",
 	"description": "Client-side enhancements for CF.",
 	"icons": {
 		"16": "cfx_16.png",
@@ -17,7 +17,7 @@
 		{
 			"run_at": "document_start",
 			"matches": [ "http://www.christianforums.com/*" ],
-			"css": [ "cfx.css", "reports.css", "universalChatbox.css" ],
+			"css": [ "cfx.css", "reports.css", "universalChatbox.css", "deletepost.css" ],
 			"js": [ "jquery.min.js", "jquery.form.js", "jstorage.js", "api.js", "cfx.js" ]
 		}
 	], 

@@ -28,9 +28,81 @@ $(function() {
 		User.ifIsModerator(function() {
 			modhatButton();
 			reportEnhancements();
+			deletionPMs();
 		});
 	});	
 });
+
+function deletionPMs() {
+	//keep track of users we might want to send a PM to.
+	//the list will be flattened on the send PM page.
+	if (Page.isThread()) {
+		$(':checkbox[name^="plist"]').click(function() {
+			var username = $(this)
+				.closest('div[id^="edit"]')
+				.find('a.bigusername')
+				.text()
+				.trim();
+				
+			//add/remove user from list.
+			if ($(this).is(':checked')) {
+				var pmUsers = State.getState('pmUsers') || [];
+				pmUsers.push(username);
+				State.setState('pmUsers', pmUsers);
+			}
+			else {
+				var pmUsers = State.getState('pmUsers') || [];
+				var index = pmUsers.indexOf(username);
+				pmUsers.splice(index, 1);
+				State.setState('pmUsers', pmUsers);
+			}
+		});
+	}
+	
+	//on the delete page, add a new textarea for PMs.
+	if (Page.isDeletePage()) {
+		var html = 'Summary reason (will be recorded in thread):<br>';
+		html += '<input type="text" name="deletereason" id="deletereason" maxlength="125" /><br />';
+		html += 'Deletion PM (will be PMed to <b>all</b> posters):<br />';
+		html += '<textarea id="deletepm"></textarea>';
+		$('input[name="deletereason"]').parent().html(html);
+		
+		var usernames = State.getState('pmUsers') || [];
+		if (usernames.length > 0) {
+			//flatten out list of usernames first.
+			//can't send a single PM to the same person twice...
+			var unique = [];
+				
+			for (var c = 0; c < usernames.length; c++) {
+				var value = usernames[c];
+				if (unique.indexOf(value) === -1) {
+					unique.push(value);
+				}
+			}
+			
+			usernames = unique;
+			
+			$('form[name="vbform"]').one('submit', function() {
+				if ($('#deletepm').val().length > 0) {
+					var message = 'The PM you entered will be sent to the following users: ' + usernames;
+					message += '\nAre you SURE you want to do this?';
+					
+					if (confirm(message)) {
+						PrivateMessages.send(usernames, 'A post of yours has been deleted',
+							$('#deletepm').val(),
+							function() {
+								State.setState('pmUsers', []); //clear out for future deletes.
+								$('#deletepm').remove(); //don't want to increase server req size.
+								$('form[name="vbform"]').submit();
+							});
+						
+						return false; //callback will submit form for us.
+					}
+				}
+			});
+		}
+	}
+}
 
 function modhatButton() {
 	//modhat button

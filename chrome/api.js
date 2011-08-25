@@ -131,6 +131,34 @@ Chatbox = {
 	}
 };
 
+PrivateMessages = {
+	send: function(users, subject, text, callback) {
+		//they could have sent a single string as a username.
+		if (users instanceof Array === false) {
+			users = [ users ];
+		}
+		
+		var proxyFrame = $('#proxyFrame');
+		if (proxyFrame.length == 0) {
+			proxyFrame = $('<iframe name="proxyFrame" id="proxyFrame"></iframe>');
+			proxyFrame.css('display', 'none');
+			proxyFrame.css('height', '0px');
+			proxyFrame.css('width', '0px');
+			$('body').append(proxyFrame);
+		}
+		
+		proxyFrame.attr('src', 'http://www.christianforums.com/pm/new/');
+		
+		proxyFrame.load(function() {
+			var proxyForm = proxyFrame.contents().find('form[name="vbform"]');
+			$('#pmrecips_txt', proxyForm).val(users.toString().replace(',', ';'));
+			$('input[name="title"]', proxyForm).val(subject);
+			$('textarea[name="message"]', proxyForm).val(text);
+			proxyForm.ajaxSubmit(callback);
+		});
+	}
+};
+
 Thread = {
 	_toolsMenu: null,
         
@@ -267,6 +295,15 @@ Page = {
 			});
                         
 			return found;
+		}
+		else {
+			return false;
+		}
+	},
+	
+	isDeletePage: function() {
+		if ($('td.tcat').length === 1) {
+			return $('td.tcat').text() === 'Delete Posts';
 		}
 		else {
 			return false;
