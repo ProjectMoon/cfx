@@ -24,8 +24,14 @@ a:hover {
 	padding-bottom: 3px;
 }
 
+#loading {
+	width: 100%;
+	/* hidden after loading done */
+}
+
 #notifications {
 	width: 100%;
+	display: none; /* hidden until loading done */
 }
 
 #notifications .row {

@@ -7,6 +7,7 @@
 	</head>
 	<body>
 		<div id="title">CF Notifications</div>
+		<div id="loading">Loading...</div>
 		<div id="notifications">
 			<div class="row">
 				<div class="type">
@@ -78,6 +79,8 @@
 				$('#userProfileLink').attr('href', 'http://www.christianforums.com/users/' + id + '/');
 				
 				User.getNotifications(function(notifications) {
+					$('#loading').hide();
+					$('#notifications').show();
 					$('#privateMessages').html(notifications.privateMessages);
 					$('#friendRequests').html(notifications.friendRequests);
 					$('#socialGroupRequests').html(notifications.socialGroupRequests);
