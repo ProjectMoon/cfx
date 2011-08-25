@@ -6,3 +6,19 @@
 	width: 100%;
 	height: 275px;
 }
+
+/* modal window for delete status */
+#deleteStatusWindow {
+	width: 150px;
+	height: 80px;
+	color: blue;
+	text-align: center;
+}
+
+#loader {
+	margin-top: 15px;
+}
+
+#deleteStatus {
+	margin-top: 15px;
+}

@@ -64,7 +64,7 @@ function deletionPMs() {
 	if (Page.isDeletePage()) {
 		var html = 'Summary reason (will be recorded in thread):<br>';
 		html += '<input type="text" name="deletereason" id="deletereason" maxlength="125" /><br />';
-		html += 'Deletion PM (will be PMed to <b>all</b> posters):<br />';
+		html += 'Deletion PM (will be PMed to <b>all</b> posters; if not entered, <b>no PM</b> will be sent):<br />';
 		html += '<textarea id="deletepm"></textarea>';
 		$('input[name="deletereason"]').parent().html(html);
 		
@@ -84,19 +84,39 @@ function deletionPMs() {
 		if (usernames.length > 0) {			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
-					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames;
-					message += '\n\nAre you SURE you want to do this?';
+					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames.toString().replace(',', ', ');
+					message += '\n\nAre you SURE you want to do this? If not, clear the text area and submit again.';
 					
 					if (confirm(message)) {
+						var statusWindow = $('<div id="deleteStatusWindow" title="Deletion in Progress"></div>');
+						statusWindow.appendTo('body');
+						
+						var status = $('<div id="deleteStatus">Sending PM...</div>');
+						var loader = $('<div id="loader"><img /></div>');
+						
+						loader.children('img').attr('src', chrome.extension.getURL('ajax-loader.gif'));
+						
+						statusWindow.append(loader).append(status);
+						
+						statusWindow.dialog({
+							modal: true,
+							resizable: false,
+							draggable: false
+						});
+						
 						PrivateMessages.send(usernames, 'A post of yours has been deleted',
 							$('#deletepm').val(),
 							function() {
+								status.html('Deleting post(s)...');
 								State.setState('pmUsers', {}); //clear out for future deletes.
 								$('#deletepm').remove(); //don't want to increase server req size.
 								$('form[name="vbform"]').submit();
 							});
 						
 						return false; //callback will submit form for us.
+					}
+					else {
+						return false; //prevent submission.
 					}
 				}
 			});
