@@ -1,4 +1,4 @@
-
+//CFX content script.
 
 $(function() {
 	//Check for updates via background page.
