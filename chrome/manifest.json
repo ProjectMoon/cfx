@@ -15,12 +15,14 @@
 	"options_page": "options.html",
 	"content_scripts": [
 		{
+			"run_at": "document_start",
 			"matches": [ "http://www.christianforums.com/*" ],
-			"css": [ "reports.css", "universalChatbox.css" ],
+			"css": [ "cfx.css", "reports.css", "universalChatbox.css" ],
 			"js": [ "jquery.min.js", "jquery.form.js", "jstorage.js", "api.js", "cfx.js" ]
 		}
 	], 
 	"permissions": [
-		"http://www.christianforums.com/*"
+		"http://www.christianforums.com/*",
+		"management"
 	]
 }

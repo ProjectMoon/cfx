@@ -18,6 +18,20 @@ Options = {
 	}
 };
 
+Updates = {
+	checkForUpdate: function(callback) {
+		chrome.extension.sendRequest({ method: 'checkForUpdate' }, function(info) {
+			callback(info);
+		});
+	},
+	
+	notifyUpdated: function() {
+		chrome.extension.sendRequest({
+			method: 'notifyUpdated'
+		});
+	}
+}
+
 Security = {
 	getSecurityToken: function(callback) {
 		//set up security grabber if not present.
