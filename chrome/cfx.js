@@ -77,20 +77,20 @@ $(function() {
 						$('#closeReport').click(function() {
 							var self = this;
 							$(self).attr('disabled', 'disabled');
-							$(self).html('Closing...');
+							$(self).html('Archiving...');
 							Thread.move('Finished Reports', false, function() {
-								$(self).html('Closed!');
+								$(self).html('Archived!');
 							});
 						});
 					}
 					else {
-						$('#reportBar').append('<button id="openReport">Open Report</button>');
+						$('#reportBar').append('<button id="openReport">Unarchive Report</button>');
 						$('#openReport').click(function() {
 							var self = this;
 							$(self).attr('disabled', 'disabled');
-							$(self).html('Opening...');
+							$(self).html('Unarchiving...');
 							Thread.move('Main Report Forum', false, function() {
-								$(self).html('Open!');
+								$(self).html('Unarchived!');
 							});
 						});				
 					}
