@@ -78,28 +78,52 @@ function deletionPMs() {
 		for (var c = 0; c < postIDs.length; c++) {
 			pmsToSend.push(pms[postIDs[c]]);
 		}
-		
-		//used for display purposes only.
-		var usernames = [];
+				
+		var pmUsers = {};
 		for (var c = 0; c < postIDs.length; c++) {
 			var username = pms[postIDs[c]].username;
 			
-			if (usernames.indexOf(username) === -1) {
-				usernames.push(username);
+			if (!pmUsers.hasOwnProperty(username)) {
+				pmUsers[username] = [];
 			}
+			
+			pmUsers[username].push(pms[postIDs[c]]);
 		}
 		
-		if (pmsToSend.length > 0) {			
+		//for display purposes only.
+		var infoText = '';
+		for (var username in pmUsers) {
+			infoText += username + ': ';
+			var totalPosts = pmUsers[username].length;
+			var totalThreads = 0;
+			
+			//get thread count
+			var countedThreads = [];
+			for (var c = 0; c < pmUsers[username].length; c++) {
+				if (countedThreads.indexOf(pmUsers[username].thread) === -1) {
+					totalThreads++;
+					countedThreads.push(pmUsers[username].thread);
+				}
+			}
+			
+			infoText += totalPosts + ' posts in ' + totalThreads + ' thread';
+			if (totalThreads > 1) totalPosts += 's';
+			infoText += '\n';
+		}
+		
+		if (Object.keys(pmUsers).length > 0) {			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
-					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames.toString().replace(',', ', ');
+					var message = 'The PM you entered will be sent to the following users:\n\n' + infoText;
 					message += '\n\nAre you SURE you want to do this? If not, clear the text area and submit again.';
 					
 					if (confirm(message)) {
+						var total = Object.keys(pmUsers).length; //for counting total # of pms.
+						
 						var statusWindow = $('<div id="deleteStatusWindow" title="Deletion in Progress"></div>');
 						statusWindow.appendTo('body');
 						
-						var status = $('<div id="deleteStatus">Sent PM 0/' + pmsToSend.length + '</div>');
+						var status = $('<div id="deleteStatus">Sent PM 0/' + total + '</div>');
 						var loader = $('<div id="loader"><img /></div>');
 						
 						loader.children('img').attr('src', chrome.extension.getURL('ajax-loader.gif'));
@@ -114,23 +138,30 @@ function deletionPMs() {
 						
 						//pm info
 						var subject =  'A post of yours has been deleted';
+						var multipostSubject = 'Some posts of yours have been deleted';
 						var text = $('#deletepm').val();
 						
 						var tasks = [];
-						for (var c = 0; c < pmsToSend.length; c++) {
-							(function(c) {
-								var pmInfo = pmsToSend[c];
+						var c = 0;
+						for (var username in pmUsers) {
+							(function(username) {
+								var pmsToSend = pmUsers[username];
 								tasks.push(function(callback) {
 									var pm = text;
-									pm += '\n\nIn thread: ' + pmInfo.thread;
-									pm += '\n[quote=' + pmInfo.username + ']' + pmInfo.contents + '[/quote]';
+									for (var c = 0; c < pmsToSend.length; c++) {
+										pm += '\n\nIn thread: ' + pmsToSend[c].thread;
+										pm += '\n[quote=' + username + ']' + pmsToSend[c].contents + '[/quote]';
+									}
 									
-									PrivateMessages.send(pmInfo.username, subject, pm, function() {
-										$('#deleteStatus').html('Sent PM ' + (c + 1) + '/' + pmsToSend.length + '</div>');
+									var subj = (pmsToSend.length > 0) ? multipostSubject : subject;
+									
+									PrivateMessages.send(username, subj, pm, function() {
+										c++;
+										$('#deleteStatus').html('Sent PM ' + c + '/' + total + '</div>');
 										callback(null);
 									});
 								});
-							})(c);
+							})(username);
 						}
 						
 						async.parallel(tasks, function() {
