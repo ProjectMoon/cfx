@@ -38,6 +38,24 @@ Background = {
 	}
 };
 
+Posts = {
+	getContainer: function(el) {
+		return $(el).closest('div[id^="edit"]');
+	},
+	
+	getID: function(el) {
+		return Posts.getContainer(el).attr('id').substring(4); //gets rid of edit
+	},
+	
+	getUsername: function(el) {
+		return Posts.getContainer(el).find('a.bigusername').text().trim();
+	},
+	
+	getMessage: function(el) {
+		return Posts.getContainer(el).find('div[id^=post_message]').text().trim();
+	}
+};
+
 Security = {
 	getSecurityToken: function(callback) {
 		//set up security grabber if not present.

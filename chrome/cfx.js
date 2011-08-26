@@ -38,24 +38,25 @@ function deletionPMs() {
 	//the list will be flattened on the send PM page.
 	if (Page.isThread()) {
 		$(':checkbox[name^="plist"]').click(function() {
-			var username = $(this)
-				.closest('div[id^="edit"]')
-				.find('a.bigusername')
-				.text()
-				.trim();
-				
-			var postID = $(this).closest('div[id^=edit]').attr('id').substring(4); //gets rid of "edit"
+			var username = Posts.getUsername(this);
+			var postID = Posts.getID(this);
+			var contents = Posts.getMessage(this);
 				
 			//add/remove user from list.
 			if ($(this).is(':checked')) {
-				var pmUsers = State.getState('pmUsers') || {};
-				pmUsers[postID] = username;
-				State.setState('pmUsers', pmUsers);
+				var pms = State.getState('pms') || {};
+				pms[postID] = {
+					username: username,
+					contents: contents,
+					thread: 'http://www.christianforums.com/t' + Thread.getID()
+				};
+				
+				State.setState('pms', pms);
 			}
 			else {
-				var pmUsers = State.getState('pmUsers') || {};
+				var pmUsers = State.getState('pms') || {};
 				delete pmUsers[postID];
-				State.setState('pmUsers', pmUsers);
+				State.setState('pms', pmUsers);
 			}
 		});
 	}
@@ -68,20 +69,27 @@ function deletionPMs() {
 		html += '<textarea id="deletepm"></textarea>';
 		$('input[name="deletereason"]').parent().html(html);
 		
-		//using a post ID -> username map ensures that even we have extra junk in the map,
+		//using a post ID -> pm info map ensures that even we have extra junk in the map,
 		//we will always get the correct usernames to PM for this particular deletion.
-		var pmUsers = State.getState('pmUsers') || {};
+		var pms = State.getState('pms') || {};
 		var postIDs = $('input[name=postids]').val().split(',');
-		var usernames = [];
+		var pmsToSend = [];
 		
 		for (var c = 0; c < postIDs.length; c++) {
-			var username = pmUsers[postIDs[c]];
+			pmsToSend.push(pms[postIDs[c]]);
+		}
+		
+		//used for display purposes only.
+		var usernames = [];
+		for (var c = 0; c < postIDs.length; c++) {
+			var username = pms[postIDs[c]].username;
+			
 			if (usernames.indexOf(username) === -1) {
 				usernames.push(username);
 			}
 		}
 		
-		if (usernames.length > 0) {			
+		if (pmsToSend.length > 0) {			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
 					var message = 'The PM you entered will be sent to the following users:\n\n' + usernames.toString().replace(',', ', ');
@@ -91,7 +99,7 @@ function deletionPMs() {
 						var statusWindow = $('<div id="deleteStatusWindow" title="Deletion in Progress"></div>');
 						statusWindow.appendTo('body');
 						
-						var status = $('<div id="deleteStatus">Sent PM 0/' + usernames.length + '</div>');
+						var status = $('<div id="deleteStatus">Sent PM 0/' + pmsToSend.length + '</div>');
 						var loader = $('<div id="loader"><img /></div>');
 						
 						loader.children('img').attr('src', chrome.extension.getURL('ajax-loader.gif'));
@@ -109,11 +117,16 @@ function deletionPMs() {
 						var text = $('#deletepm').val();
 						
 						var tasks = [];
-						for (var c = 0; c < usernames.length; c++) {
+						for (var c = 0; c < pmsToSend.length; c++) {
 							with ({ c: c }) {
+								var pmInfo = pmsToSend[c];
 								tasks.push(function(callback) {
-									PrivateMessages.send(usernames[c], subject, text, function() {
-										$('#deleteStatus').html('Sent PM ' + c + '/' + usernames.length + '</div>');
+									var pm = text;
+									pm += '\n\nIn thread: ' + pmInfo.thread;
+									pm += '\n[quote=' + pmInfo.username + ']' + pmInfo.contents + '[/quote]';
+									
+									PrivateMessages.send(pmInfo.username, subject, pm, function() {
+										$('#deleteStatus').html('Sent PM ' + (c + 1) + '/' + pmsToSend.length + '</div>');
 										callback(null);
 									});
 								});
@@ -122,7 +135,7 @@ function deletionPMs() {
 						
 						async.parallel(tasks, function() {
 							status.html('Deleting post(s)...');
-							State.setState('pmUsers', {}); //clear out for future deletes.
+							State.setState('pms', {}); //clear out for future deletes.
 							$('#deletepm').remove(); //don't want to increase server req size.
 							$('form[name="vbform"]').submit();
 						});
