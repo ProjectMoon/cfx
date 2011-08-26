@@ -147,13 +147,13 @@ function deletionPMs() {
 							(function(username) {
 								var pmsToSend = pmUsers[username];
 								tasks.push(function(callback) {
-									var pm = text + '\n\n------------\n\nThe following posts were deleted.';
+									var pm = text + '\n\n------------';
 									for (var c = 0; c < pmsToSend.length; c++) {
 										pm += '\n\nIn thread: ' + pmsToSend[c].thread;
 										pm += '\n[quote=' + username + ']' + pmsToSend[c].contents + '[/quote]\n';
 									}
 									
-									var subj = (pmsToSend.length > 0) ? multipostSubject : subject;
+									var subj = (pmsToSend.length > 1) ? multipostSubject : subject;
 									
 									PrivateMessages.send(username, subj, pm, function() {
 										c++;
@@ -164,7 +164,7 @@ function deletionPMs() {
 							})(username);
 						}
 						
-						async.parallel(tasks, function() {
+						async.series(tasks, function() {
 							status.html('Deleting post(s)...');
 							State.setState('pms', {}); //clear out for future deletes.
 							$('#deletepm').remove(); //don't want to increase server req size.
