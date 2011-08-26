@@ -118,7 +118,7 @@ function deletionPMs() {
 						
 						var tasks = [];
 						for (var c = 0; c < pmsToSend.length; c++) {
-							with ({ c: c }) {
+							(function(c) {
 								var pmInfo = pmsToSend[c];
 								tasks.push(function(callback) {
 									var pm = text;
@@ -130,7 +130,7 @@ function deletionPMs() {
 										callback(null);
 									});
 								});
-							}
+							})(c);
 						}
 						
 						async.parallel(tasks, function() {
