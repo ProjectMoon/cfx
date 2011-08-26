@@ -115,6 +115,8 @@ function deletionPMs() {
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
 					var message = 'The PM you entered will be sent to the following users:\n\n' + infoText;
+					message += '\n\nEach person will receive a copy of the message, and all of their deleted posts ';
+					message += 'will appear at the bottom of the PM.';
 					message += '\n\nAre you SURE you want to do this? If not, clear the text area and submit again.';
 					
 					if (confirm(message)) {
@@ -145,7 +147,7 @@ function deletionPMs() {
 						var c = 0;
 						for (var username in pmUsers) {
 							(function(username) {
-								var pmsToSend = pmUsers[username];
+								var pmsToSend = pmUsers[username];z	
 								tasks.push(function(callback) {
 									var pm = text + '\n\n------------';
 									for (var c = 0; c < pmsToSend.length; c++) {
