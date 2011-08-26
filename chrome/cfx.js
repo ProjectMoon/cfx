@@ -93,7 +93,7 @@ function deletionPMs() {
 		//for display purposes only.
 		var infoText = '';
 		for (var username in pmUsers) {
-			infoText += username + ': ';
+			infoText += username + ' (deleting ';
 			var totalPosts = pmUsers[username].length;
 			var totalThreads = 0;
 			
@@ -107,16 +107,20 @@ function deletionPMs() {
 			}
 			
 			infoText += totalPosts + ' posts in ' + totalThreads + ' thread';
-			if (totalThreads > 1) totalPosts += 's';
+			if (totalThreads > 1) infoText += 's';
+			infoText += ')';
+			
 			infoText += '\n';
 		}
+		
+		infoText = infoText.substring(0, infoText.length - 1); //get rid of last \n
 		
 		if (Object.keys(pmUsers).length > 0) {			
 			$('form[name="vbform"]').one('submit', function() {
 				if ($('#deletepm').val().length > 0) {
 					var message = 'The PM you entered will be sent to the following users:\n\n' + infoText;
 					message += '\n\nEach person will receive a copy of the message, and all of their deleted posts ';
-					message += 'will appear at the bottom of the PM.';
+					message += 'will be quoted at the bottom of the PM.';
 					message += '\n\nAre you SURE you want to do this? If not, clear the text area and submit again.';
 					
 					if (confirm(message)) {
@@ -147,7 +151,7 @@ function deletionPMs() {
 						var c = 0;
 						for (var username in pmUsers) {
 							(function(username) {
-								var pmsToSend = pmUsers[username];z	
+								var pmsToSend = pmUsers[username];	
 								tasks.push(function(callback) {
 									var pm = text + '\n\n------------';
 									for (var c = 0; c < pmsToSend.length; c++) {
