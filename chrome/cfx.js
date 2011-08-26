@@ -91,7 +91,7 @@ function deletionPMs() {
 						var statusWindow = $('<div id="deleteStatusWindow" title="Deletion in Progress"></div>');
 						statusWindow.appendTo('body');
 						
-						var status = $('<div id="deleteStatus">Sending PM...</div>');
+						var status = $('<div id="deleteStatus">Sent PM 0/' + usernames.length + '</div>');
 						var loader = $('<div id="loader"><img /></div>');
 						
 						loader.children('img').attr('src', chrome.extension.getURL('ajax-loader.gif'));
@@ -104,14 +104,28 @@ function deletionPMs() {
 							draggable: false
 						});
 						
-						PrivateMessages.send(usernames, 'A post of yours has been deleted',
-							$('#deletepm').val(),
-							function() {
-								status.html('Deleting post(s)...');
-								State.setState('pmUsers', {}); //clear out for future deletes.
-								$('#deletepm').remove(); //don't want to increase server req size.
-								$('form[name="vbform"]').submit();
-							});
+						//pm info
+						var subject =  'A post of yours has been deleted';
+						var text = $('#deletepm').val();
+						
+						var tasks = [];
+						for (var c = 0; c < usernames.length; c++) {
+							with ({ c: c }) {
+								tasks.push(function(callback) {
+									PrivateMessages.send(usernames[c], subject, text, function() {
+										$('#deleteStatus').html('Sent PM ' + c + '/' + usernames.length + '</div>');
+										callback(null);
+									});
+								});
+							}
+						}
+						
+						async.parallel(tasks, function() {
+							status.html('Deleting post(s)...');
+							State.setState('pmUsers', {}); //clear out for future deletes.
+							$('#deletepm').remove(); //don't want to increase server req size.
+							$('form[name="vbform"]').submit();
+						});
 						
 						return false; //callback will submit form for us.
 					}

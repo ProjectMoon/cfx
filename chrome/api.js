@@ -32,6 +32,12 @@ Updates = {
 	}
 }
 
+Background = {
+	execute: function(fn, params, callback) {
+		throw 'Not yet implemented';
+	}
+};
+
 Security = {
 	getSecurityToken: function(callback) {
 		//set up security grabber if not present.

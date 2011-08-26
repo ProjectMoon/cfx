@@ -19,7 +19,7 @@
 			"matches": [ "http://www.christianforums.com/*" ],
 			"css": [ "jquery-ui/css/smoothness/jquery-ui-1.8.15.custom.css",
 						"cfx.css", "reports.css", "universalChatbox.css", "deletepost.css" ],
-			"js": [ "jquery.min.js", "jquery-ui/js/jquery-ui-1.8.15.custom.min.js",
+			"js": [ "jquery.min.js", "jquery-ui/js/jquery-ui-1.8.15.custom.min.js", "async.js",
 						"jquery.form.js", "jstorage.js", "api.js", "cfx.js" ]
 		}
 	], 
