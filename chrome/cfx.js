@@ -147,10 +147,10 @@ function deletionPMs() {
 							(function(username) {
 								var pmsToSend = pmUsers[username];
 								tasks.push(function(callback) {
-									var pm = text;
+									var pm = text + '\n\n------------\n\nThe following posts were deleted.';
 									for (var c = 0; c < pmsToSend.length; c++) {
 										pm += '\n\nIn thread: ' + pmsToSend[c].thread;
-										pm += '\n[quote=' + username + ']' + pmsToSend[c].contents + '[/quote]';
+										pm += '\n[quote=' + username + ']' + pmsToSend[c].contents + '[/quote]\n';
 									}
 									
 									var subj = (pmsToSend.length > 0) ? multipostSubject : subject;
