@@ -51,7 +51,7 @@ function deletionPMs() {
 				pms[postID] = {
 					username: username,
 					contents: contents,
-					thread: 'http://www.christianforums.com/t' + Thread.getID()
+					thread: 'http://www.christianforums.com/' + Thread.getID()
 				};
 				
 				State.setState('pms', pms);
