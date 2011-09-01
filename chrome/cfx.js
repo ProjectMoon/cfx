@@ -1,4 +1,5 @@
 //CFX content script.
+var options = null; //set by call to Options.getOptions
 
 $(function() {
 	//Check for updates via background page.
@@ -8,7 +9,9 @@ $(function() {
 		}
 	});
 	
-	Options.getOptions(function(options) {
+	Options.getOptions(function(opts) {
+		options = opts;
+		
 		//stuff for everyone.
 		if (options.superIgnore) {
 			if (Page.isThread() && !Page.isReport()) {
