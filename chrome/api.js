@@ -424,12 +424,52 @@ User = {
 			
 			//if there are no notifications, the layout will not exist.
 			//but we still must return something.
-			if (JSON.stringify(notifications) === '{}') {
+			if (Object.keys(notifications).length === 0) {
 				for (notificationType in mapping) {
 					notifications[mapping[notificationType]] = 0;
 				}
 			}
-			callback(notifications);
+			
+			//now get subscription notifications
+			User.getSubscriptionReplyCount(function(unreadReplyCount) {
+				notifications.subscriptionReplies = unreadReplyCount;
+				callback(notifications);
+			});
+		});
+	},
+	
+	getSubscriptionReplyCount: function(callback) {
+		$.get('http://www.christianforums.com/myaccount/', function(dom) {
+			var unreadCount = 0;
+			var currSubscriptions = State.getState('subscriptions') || {};
+			var newSubscriptions = {};
+			
+			var root = $(dom).find('td.tcat:contains("Subscribed Threads")').closest('table');
+			
+			//find all table rows that have thread info. the not() call filters out
+			//extra worthless table rows.
+			root.find('tr[class!="thead"]').not(':has(.tfoot, .tcat)').each(function(i, row) {
+				var title = $(row).find('a[id^="thread_title"]').text();
+				var replies = $(row).find('a[onclick^="who("]').text(); //onclick shorter than href.
+				newSubscriptions[title] = replies;
+			});
+			
+			//compare new data and old data: if new data for thread has more replies than old data,
+			//increase unread count.
+			for (var thread in newSubscriptions) {
+				if (thread in currSubscriptions) {
+					//must compare data.
+					if (newSubscriptions[thread] > currSubscriptions[thread]) {
+						unreadCount++;
+					}
+				}
+				else {
+					//user subscribed to a new thread.	
+					unreadCount++;
+				}
+			}
+
+			callback(unreadCount);
 		});
 	}
 };

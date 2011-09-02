@@ -11,6 +11,14 @@
 		<div id="notifications">
 			<div class="row">
 				<div class="type">
+					<a target="_blank" href="http://www.christianforums.com/myaccount/">
+						Unread Subscription Replies
+					</a>
+				</div>
+				<div id="subscriptionReplies" class="number">-1</div>
+			</div>
+			<div class="row">
+				<div class="type">
 					<a target="_blank" href="http://www.christianforums.com/pm/">
 						Unread PMs
 					</a>
@@ -79,16 +87,18 @@
 				$('#userProfileLink').attr('href', 'http://www.christianforums.com/users/' + id + '/');
 				
 				User.getNotifications(function(notifications) {
+					$('#privateMessages').text(notifications.privateMessages);
+					$('#friendRequests').text(notifications.friendRequests);
+					$('#socialGroupRequests').text(notifications.socialGroupRequests);
+					$('#socialGroupInvites').text(notifications.socialGroupInvites);
+					$('#newPictureComments').text(notifications.newPictureComments);
+					$('#unapprovedPictureComments').text(notifications.unapprovedPictureComments);
+					$('#unapprovedGroupMessages').text(notifications.unapprovedGroupMessages);
+					$('#visitorMessages').text(notifications.visitorMessages);
+					$('#subscriptionReplies').text(notifications.subscriptionReplies);
+					
 					$('#loading').hide();
 					$('#notifications').show();
-					$('#privateMessages').html(notifications.privateMessages);
-					$('#friendRequests').html(notifications.friendRequests);
-					$('#socialGroupRequests').html(notifications.socialGroupRequests);
-					$('#socialGroupInvites').html(notifications.socialGroupInvites);
-					$('#newPictureComments').html(notifications.newPictureComments);
-					$('#unapprovedPictureComments').html(notifications.unapprovedPictureComments);
-					$('#unapprovedGroupMessages').html(notifications.unapprovedGroupMessages);
-					$('#visitorMessages').html(notifications.visitorMessages);
 				});
 			});
 		</script>
