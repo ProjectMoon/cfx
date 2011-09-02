@@ -439,6 +439,9 @@ User = {
 	},
 	
 	getSubscriptionReplyCount: function(callback) {
+		//this is a simpler algorithm that assumes CF will make unread
+		//threads bold in the subscription table. it is known that sometimes
+		//weird issues unread threads happen in the regular forums...
 		$.get('http://www.christianforums.com/myaccount/', function(dom) {
 			var unreadCount = 0;
 			var currSubscriptions = State.getState('subscriptions') || {};
@@ -449,26 +452,13 @@ User = {
 			//find all table rows that have thread info. the not() call filters out
 			//extra worthless table rows.
 			root.find('tr[class!="thead"]').not(':has(.tfoot, .tcat)').each(function(i, row) {
-				var title = $(row).find('a[id^="thread_title"]').text();
-				var replies = $(row).find('a[onclick^="who("]').text(); //onclick shorter than href.
-				newSubscriptions[title] = replies;
-			});
-			
-			//compare new data and old data: if new data for thread has more replies than old data,
-			//increase unread count.
-			for (var thread in newSubscriptions) {
-				if (thread in currSubscriptions) {
-					//must compare data.
-					if (newSubscriptions[thread] > currSubscriptions[thread]) {
-						unreadCount++;
-					}
-				}
-				else {
-					//user subscribed to a new thread.	
+				//bold titles are unread threads.
+				var title = $(row).find('a[id^="thread_title"]');
+				if (title.css('font-weight') === 'bold') {
 					unreadCount++;
 				}
-			}
-
+			});
+			
 			callback(unreadCount);
 		});
 	}
