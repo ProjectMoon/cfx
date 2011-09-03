@@ -3,7 +3,8 @@ Options = {
 		notificationRate: 1,
 		modhat: '',
 		superIgnore: true,
-		universalChatbox: true
+		universalChatbox: true,
+		subscriptionNotifications: true
 	},
 	
 	get user() {

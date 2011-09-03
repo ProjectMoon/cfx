@@ -59,6 +59,7 @@ function displayOptions() {
 	$('#notificationRate').val(options.notificationRate);
 	$('#superIgnore').attr('checked', options.superIgnore);
 	$('#universalChatbox').attr('checked', options.universalChatbox);
+	$('#subscriptionNotifications').attr('checked', options.subscriptionNotifications);
 }
 
 $(function() {

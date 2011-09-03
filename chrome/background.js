@@ -21,6 +21,12 @@ $(function() {
 			for (type in notifications) {
 				total += notifications[type];
 			}
+			
+			//hide subscription notifications from badge if user has configured
+			//it thus.
+			if (Options.user.subscriptionNotifications === false) {
+				total -= notifications.subscriptionReplies;
+			}
 						
 			chrome.browserAction.setBadgeText({ text: total.toString() });
 			
