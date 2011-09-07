@@ -66,20 +66,22 @@ function bibleTag() {
 		});
 	}
 	else if (Page.isReplyPage()) {
-		//$('form[name=vbform]')[0].onsubmit = null;
+		$('form[name=vbform]')[0].onsubmit = null;
 		$('form[name=vbform]').one('submit', function(e) {
 			var text = $('#vB_Editor_001_textarea').val();
 			
 			BBCode.bibleTag(text, function(bibleText) {
-				//replaces bible tags with corresponding bible text.
-				for (var bibleTag in bibleText) {
-					text = text.replace(bibleTag, bibleText[bibleTag]);
+				if (bibleText != null) {
+					//replaces bible tags with corresponding bible text.
+					for (var bibleTag in bibleText) {
+						text = text.replace(bibleTag, bibleText[bibleTag]);
+					}
+					
+					$('#vB_Editor_001_textarea').val(text);
 				}
 				
-				$('#vB_Editor_001_textarea').val(text);
-				
-				//$('#qrform')[0].onsubmit = oldhandler;
-				$('#vB_Editor_001_save').click();
+				$('form[name=vbform]')[0].onsubmit = oldhandler;
+				$('form[name=vbform]').submit();
 			});
 		
 			return false;
