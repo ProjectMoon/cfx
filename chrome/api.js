@@ -163,49 +163,48 @@ BBCode = {
 		var tasks = {};
 		
 		//Meant to be executed from content script, so uses async option get.
-		Options.getOptions(function(opts) {
-			for (var c = 0; c < tags.length; c++) {
-				(function(c) {
-					tasks[tags[c]] = function(cb) {
-						var parsed = tags[c].match(/\[bible(=.*?)?\](.*)\[\/bible\]/);
-						
-						//use specific version?
-						var version = opts.bibleVersion.toLowerCase();
-						if (typeof parsed[1] !== 'undefined') {
-							//first character is =.
-							version = parsed[1].substring(1).toLowerCase().trim();
-						}
-						
-						//what to look up.
-						var passage = parsed[2].trim();
-						
-						//if no specific method found, assume public domain
-						//translation.
-						if (typeof Bible[version] === 'undefined') {
-							Bible.publicDomain(version, passage, function(text) {
-								cb(null, text);
-							});
-						}
-						else {
-							Bible[version](passage, function(text) {
-								cb(null, text);
-							});
-						}
-						
-					};
-				})(c);
-			}
-			
-			async.parallel(tasks, function(err, bibleQuotes) {
-				callback(bibleQuotes);
+		if (tags != null && tags.length > 0) {
+			Options.getOptions(function(opts) {
+				for (var c = 0; c < tags.length; c++) {
+					(function(c) {
+						tasks[tags[c]] = function(cb) {
+							var parsed = tags[c].match(/\[bible(=.*?)?\](.*)\[\/bible\]/);
+							
+							//use specific version?
+							var version = opts.bibleVersion.toLowerCase();
+							if (typeof parsed[1] !== 'undefined') {
+								//first character is =.
+								version = parsed[1].substring(1).toLowerCase().trim();
+							}
+							
+							//what to look up.
+							var passage = parsed[2].trim();
+							
+							//if no specific method found, assume public domain
+							//translation.
+							if (typeof Bible[version] === 'undefined') {
+								Bible.publicDomain(version, passage, function(text) {
+									cb(null, text);
+								});
+							}
+							else {
+								Bible[version](passage, function(text) {
+									cb(null, text);
+								});
+							}
+							
+						};
+					})(c);
+				}
+				
+				async.parallel(tasks, function(err, bibleQuotes) {
+					callback(bibleQuotes);
+				});
 			});
-		});
-	},
-	
-	testBibleTag: function() {
-		BBCode.nab('John 3', function(text) {
-			alert(text);
-		});
+		}
+		else {
+			callback(null);
+		}
 	}
 };
 

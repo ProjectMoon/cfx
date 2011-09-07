@@ -43,21 +43,25 @@ function bibleTag() {
 		//for quick reply.
 		var oldhandler = $('#qrform')[0].onsubmit;
 		$('#qrform')[0].onsubmit = null;
+		
 		$('#qrform').one('submit', function(e) {
 			var text = Thread.getQuickReplyText();
 			
 			BBCode.bibleTag(text, function(bibleText) {
-				//replaces bible tags with corresponding bible text.
-				for (var bibleTag in bibleText) {
-					text = text.replace(bibleTag, bibleText[bibleTag]);
+				if (bibleText != null) {
+					//replaces bible tags with corresponding bible text.
+					for (var bibleTag in bibleText) {
+						text = text.replace(bibleTag, bibleText[bibleTag]);
+					}
+					
+					Thread.fillReply(text);
 				}
 				
-				Thread.fillReply(text);
-				
-				//$('#qrform')[0].onsubmit = oldhandler;
-				$('#qr_submit').click();
+				$('#qrform')[0].onsubmit = oldhandler;
+				//$('#qr_submit').click();
+				$('#qrform').submit();
 			});
-		
+			
 			return false;
 		});
 	}
