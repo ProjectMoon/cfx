@@ -520,6 +520,15 @@ Page = {
 		}
 	},
 	
+	isReplyPage: function() {
+		if (location.href.match(/www\.christianforums\.com\/newreply\.php/)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	
 	containsBreadcrumb: function(text) {
 		var found = false;
 		

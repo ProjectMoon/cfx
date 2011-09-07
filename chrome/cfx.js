@@ -61,6 +61,26 @@ function bibleTag() {
 			return false;
 		});
 	}
+	else if (Page.isReplyPage()) {
+		//$('form[name=vbform]')[0].onsubmit = null;
+		$('form[name=vbform]').one('submit', function(e) {
+			var text = $('#vB_Editor_001_textarea').val();
+			
+			BBCode.bibleTag(text, function(bibleText) {
+				//replaces bible tags with corresponding bible text.
+				for (var bibleTag in bibleText) {
+					text = text.replace(bibleTag, bibleText[bibleTag]);
+				}
+				
+				$('#vB_Editor_001_textarea').val(text);
+				
+				//$('#qrform')[0].onsubmit = oldhandler;
+				$('#vB_Editor_001_save').click();
+			});
+		
+			return false;
+		});
+	}
 }
 
 function deletionPMs() {
