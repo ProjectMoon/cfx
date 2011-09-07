@@ -203,7 +203,9 @@ BBCode = {
 			});
 		}
 		else {
-			callback(null);
+			//setTimeout forces it to be asynchronous.
+			//otherwise really weird stuff happens.
+			setTimeout(function() { callback(null); }, 0);
 		}
 	}
 };

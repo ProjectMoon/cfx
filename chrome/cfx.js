@@ -47,7 +47,6 @@ function bibleTag() {
 		
 		var oldhandler = $('#qrform')[0].onsubmit;
 		$('#qrform')[0].onsubmit = null;
-		
 		$('#qrform').one('submit', function(e) {
 			var text = Thread.getQuickReplyText();
 			
@@ -61,13 +60,12 @@ function bibleTag() {
 					Thread.fillReply(text);
 				}
 				
-				$('#qrform')[0].onsubmit = oldhandler;
+				//$('#qrform')[0].onsubmit = oldhandler;
+				location.href = 'javascript:document.getElementById("qrform").onsubmit = ' + oldhandler.toString();
 				if ($('#qr_preview').data('clicked')) {
-					//location.href = 'javascript:clickedelm = ' + $('#qr_preview').val() + ';';
 					$('#qr_preview').click();
 				}
 				else {
-					//$('#qrform').submit();
 					$('#qr_submit').click();
 				}
 			});
@@ -79,6 +77,8 @@ function bibleTag() {
 		$('input[name=preview]').click(function() {
 			$(this).data('clicked', true);
 		});
+		
+		var oldhandler = $('form[name=vbform]')[0].onsubmit;
 		
 		$('form[name=vbform]')[0].onsubmit = null;
 		$('form[name=vbform]').one('submit', function(e) {
@@ -94,7 +94,8 @@ function bibleTag() {
 					$('#vB_Editor_001_textarea').val(text);
 				}
 				
-				$('form[name=vbform]')[0].onsubmit = oldhandler;
+				//$('form[name=vbform]')[0].onsubmit = oldhandler;
+				location.href = 'javascript:document.forms["vbform"].onsubmit = ' + oldhandler.toString();
 				if ($('input[name=preview]').data('clicked')) {
 					$('input[name=preview]').click();
 				}
