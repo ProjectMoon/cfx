@@ -60,6 +60,7 @@ function displayOptions() {
 	$('#superIgnore').attr('checked', options.superIgnore);
 	$('#universalChatbox').attr('checked', options.universalChatbox);
 	$('#subscriptionNotifications').attr('checked', options.subscriptionNotifications);
+	$('#bibleVersion').val(options.bibleVersion);
 }
 
 $(function() {
@@ -88,7 +89,7 @@ function bindEvents() {
 		hidePermanentMessage();
 	});
 	*/
-	
+		
 	$('input, textarea').change(function() {
 		var key = $(this).attr('data-option');
 		var dataType = $(this).attr('data-type');
@@ -108,6 +109,9 @@ function bindEvents() {
 		}
 		else if (dataType === 'string') {
 			options[key] = $(this).val();
+		}
+		else if (dataType === 'lowercaseString') {
+			options[key] = $(this).val().toLowerCase();
 		}
 		else {
 			options[key] = $(this).val();

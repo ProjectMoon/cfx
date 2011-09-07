@@ -41,6 +41,10 @@ body {
 	width: 40px;
 }
 
+#bibleVersion {
+	width: 120px;
+}
+
 #modhat {
 	width: 400px;
 	height: 250px;
