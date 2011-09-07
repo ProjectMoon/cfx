@@ -1,6 +1,6 @@
 {
 	"name": "Christian Forums Extended",
-	"version": "2.11",
+	"version": "2.12",
 	"description": "Client-side enhancements for CF.",
 	"icons": {
 		"16": "cfx_16.png",
@@ -25,6 +25,7 @@
 	], 
 	"permissions": [
 		"http://www.christianforums.com/*",
+		"http://www.esvapi.org/*",
 		"management"
 	]
 }

@@ -39,6 +39,32 @@ Background = {
 	}
 };
 
+BBCode = {
+	bibleTag: function(text, callback) {
+		var esvURL = 'http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=';
+		var regex = /\[bible\](.+?)\[\/bible\]/gi;
+		var tags = text.match(regex);
+		var verses = [];
+		var tasks = [];
+		
+		for (var c = 0; c < tags.length; c++) {
+			(function(c) {
+				tasks.push(function(cb) {
+					var passage = tags[c].match(/\[bible\](.*)\[\/bible\]/)[1]; //1 is the text inside tag.
+					$.get(esvURL + passage, function(html) {
+						verses.push(html);
+						cb(null);
+					});
+				});
+			})(c);
+		}
+		
+		async.parallel(tasks, function() {
+			callback(verses);
+		});		
+	}
+}
+
 Posts = {
 	getContainer: function(el) {
 		return $(el).closest('div[id^="edit"]');
