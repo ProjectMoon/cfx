@@ -173,11 +173,11 @@ BBCode = {
 						var version = opts.bibleVersion.toLowerCase();
 						if (typeof parsed[1] !== 'undefined') {
 							//first character is =.
-							version = parsed[1].substring(1).toLowerCase();
+							version = parsed[1].substring(1).toLowerCase().trim();
 						}
 						
 						//what to look up.
-						var passage = parsed[2];
+						var passage = parsed[2].trim();
 						
 						//if no specific method found, assume public domain
 						//translation.
