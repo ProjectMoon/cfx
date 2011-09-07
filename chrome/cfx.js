@@ -49,13 +49,13 @@ function bibleTag() {
 			BBCode.bibleTag(text, function(bibleText) {
 				//replaces bible tags with corresponding bible text.
 				for (var bibleTag in bibleText) {
-					text = '[quote]' + text.replace(bibleTag, bibleText[bibleTag]) + '[/quote]';
+					text = text.replace(bibleTag, bibleText[bibleTag]);
 				}
 				
 				Thread.fillReply(text);
 				
-				$(this)[0].onsubmit = oldhandler;
-				$(this).submit();
+				//$('#qrform')[0].onsubmit = oldhandler;
+				$('#qr_submit').click();
 			});
 		
 			return false;

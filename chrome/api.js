@@ -49,13 +49,17 @@ Bible = {
 				var text = $(xml).find('error').text();
 			}
 			else {
-				var text = passage + ' (' + version.toUpperCase() + ')\n\n';
+				passage = passage.substring(0, 1).toUpperCase() + passage.substring(1);
+				var text = '[b]' + passage + ' (' + version.toUpperCase() + ')[/b]\n[indent]';
 				
 				$(xml).find('item').each(function(i, item) {
 					text += $(item).children('chapter').text();
 					text += ':' + $(item).children('verse').text();
 					text += ' ' + $(item).children('text').text();
+					text += '\n';
 				});
+				
+				text += '[/indent]';
 			}
 			
 			callback(text);
@@ -65,11 +69,17 @@ Bible = {
 	esv: function(passage, callback) {
 		var esvURL = 'http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=';
 		$.get(esvURL + passage, function(html) {
-			callback($(html).text());
+			passage = passage.substring(0, 1).toUpperCase() + passage.substring(1);
+			var text = '[b]' + passage + ' (ESV)[/b]\n[indent]';
+			text += $(html).text();
+			text += '[/indent]';
+			callback(text);
 		});		
 	},
 	
 	nab: function(passage, callback) {
+		//when given a verse range (e.g. genesis 1:1-2), adds extra verses
+		//in genesis case, it adds verses 10 to 31.
 		var split = passage.split(' ');
 		var book = split[0];
 		var chapterAndVerse = split[1]; 
@@ -124,7 +134,9 @@ Bible = {
 				}
 			});
 			
-			text = book + ' ' + chapterAndVerse + ' (NAB)\n\n' + text;
+			//display it nicely.
+			book = book.substring(0, 1).toUpperCase() + book.substring(1);
+			text = '[b]' + book + ' ' + chapterAndVerse + ' (NAB)[/b]\n[indent]' + text + '[/indent]';
 			callback(text);
 		});
 	}
