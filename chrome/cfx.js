@@ -58,7 +58,6 @@ function bibleTag() {
 				}
 				
 				$('#qrform')[0].onsubmit = oldhandler;
-				//$('#qr_submit').click();
 				$('#qrform').submit();
 			});
 			
@@ -66,6 +65,10 @@ function bibleTag() {
 		});
 	}
 	else if (Page.isReplyPage()) {
+		$('#qr_preview').click(function() {
+			$(this).data('clicked', true);
+		});
+		
 		$('form[name=vbform]')[0].onsubmit = null;
 		$('form[name=vbform]').one('submit', function(e) {
 			var text = $('#vB_Editor_001_textarea').val();
@@ -81,6 +84,9 @@ function bibleTag() {
 				}
 				
 				$('form[name=vbform]')[0].onsubmit = oldhandler;
+				if ($('#qr_preview').data('clicked')) {
+					location.href = 'javascript:clickedelm = ' + $('#qr_preview').val() + ';';
+				}
 				$('form[name=vbform]').submit();
 			});
 		
