@@ -39,31 +39,146 @@ Background = {
 	}
 };
 
+Bible = {
+	publicDomain: function(version, passage, callback) {
+		var url = 'http://api.preachingcentral.com/bible.php?passage=' + passage + '&version=' + version;
+		
+		$.get(url, function(xml) {
+			if ($(xml).find('error').length > 0) {
+				var text = $(xml).find('error').text();
+			}
+			else {
+				var text = passage + ' (' + version.toUpperCase() + ')\n\n';
+				
+				$(xml).find('item').each(function(i, item) {
+					text += $(item).children('chapter').text();
+					text += ':' + $(item).children('verse').text();
+					text += ' ' + $(item).children('text').text();
+				});
+			}
+			
+			callback(text);
+		});
+	},
+	
+	esv: function(passage, callback) {
+		var esvURL = 'http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=';
+		$.get(esvURL + passage, function(html) {
+			callback($(html).text());
+		});		
+	},
+	
+	nab: function(passage, callback) {
+		var split = passage.split(' ');
+		var book = split[0];
+		var chapterAndVerse = split[1]; 
+	
+		//could be # (whole chapter), #:# (chapter:verse), or #:#-# (chapter:verse range)
+		if (chapterAndVerse.indexOf(':') !== -1) {
+			var chapter = chapterAndVerse.substring(0, chapterAndVerse.indexOf(':'));
+			//verse range?
+			var verses = chapterAndVerse.substring(chapterAndVerse.indexOf(':') + 1);
+			if (verses.indexOf('-') !== -1) {
+				verses = [ verses.substring(0, verses.indexOf('-')), verses.substring(verses.indexOf('-') + 1) ];
+			}
+			else {
+				verses = [ verses ];
+			}
+		}
+		else {
+			var chapter = chapterAndVerse;
+			var verses = [];
+		}
+		
+		var url = 'http://www.usccb.org/bible/scripture.cfm?bk=' + book + '&ch=' + chapter;
+		
+		var filter = '';
+		if (verses.length > 0) {
+			verses.forEach(function(verse) {
+				filter += 'span.bcv:contains(' + verse + '),';
+			});
+			
+			//remove last ,
+			filter = filter.slice(0, -1);
+		}
+		else {
+			filter = 'span.bcv';
+		}
+		
+		$.get(url, function(dom) {
+			var text = '';
+			
+			function textNodes() { return this.nodeType == 3; }
+			
+			$(dom).find(filter).each(function(i, el) {
+				text += el.innerText + ' ';
+				var node = el.nextSibling;
+				
+				while (node != null && $(node).hasClass('bcv') === false) {
+					if ($(node).hasClass('enref') === false && $(node).hasClass('fnref') === false) {
+						text += $(node).text();
+					}
+					
+					node = node.nextSibling;
+				}
+			});
+			
+			text = book + ' ' + chapterAndVerse + ' (NAB)\n\n' + text;
+			callback(text);
+		});
+	}
+};
+
 BBCode = {
 	bibleTag: function(text, callback) {
-		var esvURL = 'http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=';
-		var regex = /\[bible\](.+?)\[\/bible\]/gi;
+		var regex = /\[bible(=.*)?\](.+?)\[\/bible\]/gi;
 		var tags = text.match(regex);
 		var verses = [];
-		var tasks = [];
+		var tasks = {};
 		
 		for (var c = 0; c < tags.length; c++) {
 			(function(c) {
-				tasks.push(function(cb) {
-					var passage = tags[c].match(/\[bible\](.*)\[\/bible\]/)[1]; //1 is the text inside tag.
-					$.get(esvURL + passage, function(html) {
-						verses.push(html);
-						cb(null);
-					});
-				});
+				tasks[tags[c]] = function(cb) {
+					var parsed = tags[c].match(/\[bible(=.*?)?\](.*)\[\/bible\]/);
+					var version = 'nab';
+					
+					//use specific version?
+					if (typeof parsed[1] !== 'undefined') {
+						//first character is =.
+						version = parsed[1].substring(1);
+					}
+					
+					//what to look up.
+					var passage = parsed[2];
+					
+					//if no specific method found, assume public domain
+					//translation.
+					if (typeof Bible[version] === 'undefined') {
+						Bible.publicDomain(version, passage, function(text) {
+							cb(null, text);
+						});
+					}
+					else {
+						Bible[version](passage, function(text) {
+							cb(null, text);
+						});
+					}
+					
+				};
 			})(c);
 		}
 		
-		async.parallel(tasks, function() {
-			callback(verses);
+		async.parallel(tasks, function(err, bibleQuotes) {
+			callback(bibleQuotes);
 		});		
+	},
+	
+	testBibleTag: function() {
+		BBCode.nab('John 3', function(text) {
+			alert(text);
+		});
 	}
-}
+};
 
 Posts = {
 	getContainer: function(el) {

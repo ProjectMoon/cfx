@@ -26,6 +26,8 @@
 	"permissions": [
 		"http://www.christianforums.com/*",
 		"http://www.esvapi.org/*",
+		"http://www.usccb.org/bible/*",
+		"http://api.preachingcentral.com/*",
 		"management"
 	]
 }
