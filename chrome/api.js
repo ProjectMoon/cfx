@@ -103,25 +103,38 @@ Bible = {
 		
 		var url = 'http://www.usccb.org/bible/scripture.cfm?bk=' + book + '&ch=' + chapter;
 		
-		var filter = '';
+		var filter = [];
 		if (verses.length > 0) {
-			verses.forEach(function(verse) {
-				filter += 'span.bcv:contains(' + verse + '),';
-			});
-			
-			//remove last ,
-			filter = filter.slice(0, -1);
+			//produce a range.
+			var start = +verses[0];
+			var end = +verses[verses.length - 1];
+			for (var c = start; c <= end; c++) {
+				filter.push(c);
+			}
 		}
 		else {
-			filter = 'span.bcv';
+			filter = null;
 		}
 		
 		$.get(url, function(dom) {
 			var text = '';
 			
-			function textNodes() { return this.nodeType == 3; }
+			function filterVerses() {
+				if (filter != null) {
+					for (var c = 0; c < filter.length; c++) {
+						if ($(this).text() == filter[c]) {
+							return true;
+						}
+					}
+					
+					return false;
+				}
+				else {
+					return true;
+				}
+			}
 			
-			$(dom).find(filter).each(function(i, el) {
+			$(dom).find('span.bcv').filter(filterVerses).each(function(i, el) {
 				text += el.innerText + ' ';
 				var node = el.nextSibling;
 				
