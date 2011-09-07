@@ -27,6 +27,8 @@ $(function() {
 			createUniversalChatbox();
 		}
 		
+		bibleTag();
+		
 		//moderator functionality.
 		User.ifIsModerator(function() {
 			modhatButton();
@@ -35,6 +37,31 @@ $(function() {
 		});
 	});	
 });
+
+function bibleTag() {
+	if (Page.isThread()) {
+		//for quick reply.
+		var oldhandler = $('#qrform')[0].onsubmit;
+		$('#qrform')[0].onsubmit = null;
+		$('#qrform').one('submit', function(e) {
+			var text = Thread.getQuickReplyText();
+			
+			BBCode.bibleTag(text, function(bibleText) {
+				//replaces bible tags with corresponding bible text.
+				for (var bibleTag in bibleText) {
+					text = '[quote]' + text.replace(bibleTag, bibleText[bibleTag]) + '[/quote]';
+				}
+				
+				Thread.fillReply(text);
+				
+				$(this)[0].onsubmit = oldhandler;
+				$(this).submit();
+			});
+		
+			return false;
+		});
+	}
+}
 
 function deletionPMs() {
 	//keep track of users we might want to send a PM to.

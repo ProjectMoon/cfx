@@ -331,7 +331,22 @@ PrivateMessages = {
 
 Thread = {
 	_toolsMenu: null,
-        
+    
+    bindQuickReplyEvent: function(fn) {
+		$('#qrform').submit(fn);
+	},
+	
+    getQuickReplyText: function() {
+		//whether to use rich text editor iframe or the textarea.
+		if ($('#vB_Editor_QR_iframe').is(':visible')) {
+			//may not work; but chrome doesn't use the rich text editor anyway...
+			return $('#vB_Editor_QR_iframe')[0].contentWindow.document.body.innerHTML;
+		}
+		else {
+			return $('#vB_Editor_QR_textarea').val();
+		}		
+	},
+	
 	quickReply: function(message) {
 		//whether to use rich text editor iframe or the textarea.
 		if ($('#vB_Editor_QR_iframe').is(':visible')) {
@@ -339,7 +354,7 @@ Thread = {
 			$('#vB_Editor_QR_iframe')[0].contentWindow.document.execCommand('insertHTML', null, message);
 		}
 		else {
-			$('#vB_Editor_QR_textarea').val(message);
+			$('#vB_Editor_QR_textarea').val();
 		}
                 
 		$('#qr_submit').click();
