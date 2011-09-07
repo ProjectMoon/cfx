@@ -54,7 +54,8 @@ function bibleTag() {
 				if (bibleText != null) {
 					//replaces bible tags with corresponding bible text.
 					for (var bibleTag in bibleText) {
-						text = text.replace(bibleTag, bibleText[bibleTag]);
+						//using split/join allows a global replace without using regexps.
+						text = text.split(bibleTag).join(bibleText[bibleTag]);
 					}
 					
 					Thread.fillReply(text);
@@ -88,7 +89,8 @@ function bibleTag() {
 				if (bibleText != null) {
 					//replaces bible tags with corresponding bible text.
 					for (var bibleTag in bibleText) {
-						text = text.replace(bibleTag, bibleText[bibleTag]);
+						//using split/join allows a global replace without using regexps.
+						text = text.split(bibleTag).join(bibleText[bibleTag]);
 					}
 					
 					$('#vB_Editor_001_textarea').val(text);
