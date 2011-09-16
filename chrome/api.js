@@ -482,6 +482,29 @@ Thread = {
 			
 			proxyForm.ajaxSubmit(callback);                         
 		});
+	},
+	
+	postReplyTo: function(threadID, text) {
+		$.get('http://www.christianforums.com/' + threadID, function(thread) {
+			var replyURL = $(thread).find('img.replybutton').parent().attr('href');
+			var postID = replyURL.substring(replyURL.indexOf('&p=') + 3); //is always last variable, so ok here.
+
+			Security.getSecurityToken(function(token) {
+				User.getUserID(function(userID) {
+					var url = 'http://www.christianforums.com/newreply.php?do=newreply&noquote=1&p=' + postID;
+					
+					var data = {
+						message: text,
+						securitytoken: token,
+						do: 'postreply',
+					};
+					
+					$.post(url, data, function(dom) {
+						alert($(dom).text());
+					});
+				});
+			});			
+		});
 	}
 };
 
@@ -572,7 +595,7 @@ User = {
 	
 	ifIsModerator: function(callback) {
 		var modGroups = [ 'Trainee Moderator', 'Moderators', 'Senior Moderators', 
-							'Supervisors', 'CF Staff Trainer', 'Cahplaincy', 
+							'Supervisors', 'CF Staff Trainer', 'Chaplaincy', 
 							'Administrators', 'CEO\'s Advisors', 'Superadministrators' ];
 							
 		User.getUserGroups(function(groups) {
@@ -656,6 +679,37 @@ User = {
 			});
 			
 			callback(unreadCount);
+		});
+	}
+};
+
+Reports = {
+	getPageCount: function(callback) {
+		$.get('http://www.christianforums.com/f414/', function(dom) {
+			var anchor = $('.pagenav', dom).first().find('a[title^="Last Page"]');
+			var count = anchor.attr('href').slice(-2).slice(0, 1);
+			callback(count);
+		});
+	},
+	
+	getReports: function(page, callback) {
+		$.get('http://www.christianforums.com/f414-' + page + '/', function(dom) {
+			var reports = [];
+			
+			$(dom).find('a[id^="thread_title_"]').each(function(i, threadLink) {
+				var title = $(threadLink).text();
+				var prefix = $(threadLink).prev().text();
+				var info = $(threadLink).closest('td').next().attr('title');
+				var replies = info.substring(9, info.indexOf('/', 9));
+				
+				reports.push({
+					title: title,
+					prefix: prefix,
+					replies: replies
+				});
+			});
+			
+			callback(reports);
 		});
 	}
 };

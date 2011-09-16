@@ -2,6 +2,7 @@
 var options = null; //set by call to Options.getOptions
 
 $(function() {
+	alert(Thread.getID());
 	//Check for updates via background page.
 	Updates.checkForUpdate(function(info) {
 		if (info.updated) {
