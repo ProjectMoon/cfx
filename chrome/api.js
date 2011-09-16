@@ -389,7 +389,7 @@ Thread = {
 			$('#vB_Editor_QR_iframe')[0].contentWindow.document.execCommand('insertHTML', null, message);
 		}
 		else {
-			$('#vB_Editor_QR_textarea').val();
+			$('#vB_Editor_QR_textarea').val(message);
 		}
                 
 		$('#qr_submit').click();
@@ -582,7 +582,7 @@ User = {
 	parseUserID: function(url) {
 		var end = url.lastIndexOf('/') - 1;
 		var start = url.lastIndexOf('/', end) + 1;
-		var id = url.substring(start , end);
+		var id = url.substring(start , end + 1);
 		return id;
 	},
 	
@@ -779,8 +779,10 @@ Reports = {
 					//td.alt1 = link to post and "reason" (warning, etc)
 					if (c == 1) {
 						var post = $(td).children('.infraction_post').children('a').attr('href');
+						var thread = $(td).children('.infraction_post').children('a').text().trim();
 						var reason = $(td).children('.infraction_reason').children('em').text();
-						currContact.post = post;
+						currContact.postLink = post;
+						currContact.thread = thread;
 						currContact.type = reason;
 					}
 					
@@ -802,7 +804,7 @@ Reports = {
 					//td.alt2 = view link
 					if (c == 4) {
 						var viewLink = $(td).children('a').attr('href');
-						currContact.link = viewLink;
+						currContact.contactLink = viewLink;
 					}
 				});
 				
