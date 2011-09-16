@@ -61,6 +61,7 @@ function displayOptions() {
 	$('#universalChatbox').attr('checked', options.universalChatbox);
 	$('#subscriptionNotifications').attr('checked', options.subscriptionNotifications);
 	$('#bibleVersion').val(options.bibleVersion);
+	$('#automatedStaffContacts').attr('checked', options.automatedStaffContacts);
 }
 
 $(function() {

@@ -5,7 +5,8 @@ Options = {
 		superIgnore: true,
 		universalChatbox: true,
 		subscriptionNotifications: true,
-		bibleVersion: 'nab'
+		bibleVersion: 'nab',
+		automatedStaffContacts: true
 	},
 	
 	get user() {

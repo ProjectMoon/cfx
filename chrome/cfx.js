@@ -34,7 +34,10 @@ $(function() {
 			modhatButton();
 			reportEnhancements();
 			deletionPMs();
-			automatedStaffContacts();
+			
+			if (options.automatedStaffContacts) {
+				automatedStaffContacts();
+			}
 		});
 	});	
 });
