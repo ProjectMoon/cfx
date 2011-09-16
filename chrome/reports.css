@@ -18,6 +18,10 @@
 	color: green;
 }
 
+#postContacts {
+	float: right;
+}
+
 #contactsPreview {
 	
 }
