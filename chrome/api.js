@@ -5,7 +5,8 @@ Options = {
 		superIgnore: true,
 		universalChatbox: true,
 		subscriptionNotifications: true,
-		bibleVersion: 'nab'
+		bibleVersion: 'nab',
+		automatedStaffContacts: true
 	},
 	
 	get user() {
@@ -362,6 +363,15 @@ Thread = {
 		$('#qrform').submit(fn);
 	},
 	
+	hasZeroReplies: function() {
+		if (Page.isThread()) {
+			return $('div[id^="edit"]').length == 1;
+		}
+		else {
+			throw 'This page is not a thread.';
+		}
+	},
+	
     getQuickReplyText: function() {
 		//whether to use rich text editor iframe or the textarea.
 		if ($('#vB_Editor_QR_iframe').is(':visible')) {
@@ -380,7 +390,7 @@ Thread = {
 			$('#vB_Editor_QR_iframe')[0].contentWindow.document.execCommand('insertHTML', null, message);
 		}
 		else {
-			$('#vB_Editor_QR_textarea').val();
+			$('#vB_Editor_QR_textarea').val(message);
 		}
                 
 		$('#qr_submit').click();
@@ -397,8 +407,8 @@ Thread = {
 		}
 	},
         
-	getID: function() {
-		var href = location.href;
+	getID: function(url) {
+		var href = url || location.href;
 		var end = href.lastIndexOf('/');
 		
 		//Handle pages (ex: t12345-2, for page 2 of id t12345)
@@ -482,6 +492,31 @@ Thread = {
 			
 			proxyForm.ajaxSubmit(callback);                         
 		});
+	},
+	
+	postReplyTo: function(threadID, text, callback) {
+		$.get('http://www.christianforums.com/' + threadID, function(thread) {
+			var replyURL = $(thread).find('img.replybutton').parent().attr('href');
+			var postID = replyURL.substring(replyURL.indexOf('&p=') + 3); //is always last variable, so ok here.
+
+			Security.getSecurityToken(function(token) {
+				User.getUserID(function(userID) {
+					var url = 'http://www.christianforums.com/newreply.php?do=newreply&noquote=1&p=' + postID;
+					
+					var data = {
+						message: text,
+						securitytoken: token,
+						do: 'postreply',
+					};
+					
+					$.post(url, data, function(dom) {
+						//should probably figure out errors here.
+						//duplicate post, etc.
+						callback();
+					});
+				});
+			});			
+		});
 	}
 };
 
@@ -545,6 +580,13 @@ Page = {
 };
 
 User = {
+	parseUserID: function(url) {
+		var end = url.lastIndexOf('/') - 1;
+		var start = url.lastIndexOf('/', end) + 1;
+		var id = url.substring(start , end + 1);
+		return id;
+	},
+	
 	getUserID: function(callback) {
 		$.get('http://www.christianforums.com/faq.php?faq=gospel', function(dom) {
 			var href = $('#usercptools_menu', dom).find('a:contains(Your Profile)').attr('href');
@@ -572,7 +614,7 @@ User = {
 	
 	ifIsModerator: function(callback) {
 		var modGroups = [ 'Trainee Moderator', 'Moderators', 'Senior Moderators', 
-							'Supervisors', 'CF Staff Trainer', 'Cahplaincy', 
+							'Supervisors', 'CF Staff Trainer', 'Chaplaincy', 
 							'Administrators', 'CEO\'s Advisors', 'Superadministrators' ];
 							
 		User.getUserGroups(function(groups) {
@@ -656,6 +698,121 @@ User = {
 			});
 			
 			callback(unreadCount);
+		});
+	}
+};
+
+Reports = {
+	getPageCount: function(callback) {
+		$.get('http://www.christianforums.com/f414/', function(dom) {
+			var anchor = $('.pagenav', dom).first().find('a[title^="Last Page"]');
+			var count = anchor.attr('href').slice(-2).slice(0, 1);
+		});
+	},
+	
+	getReports: function(page, callback) {
+		$.get('http://www.christianforums.com/f414-' + page + '/', function(dom) {
+			var reports = [];
+			
+			$(dom).find('a[id^="thread_title_"]').each(function(i, threadLink) {
+				var id = Thread.getID($(threadLink).attr('href'));
+				var title = $(threadLink).text();
+				var prefix = $(threadLink).prev().text();
+				var info = $(threadLink).closest('td').next().attr('title');
+				
+				//9 for "Replies: " and then the , separates it from the rest.
+				var replies = +info.substring(9, info.indexOf(','));
+				
+				reports.push({
+					reportID: id,
+					title: title,
+					prefix: prefix,
+					replies: replies
+				});
+			});
+			
+			callback(reports);
+		});
+	},
+	
+	getReport: function(reportID, callback) {
+		$.get('http://www.christianforums.com/' + reportID, function(dom) {
+			var post = $(dom).find('div[id^="edit"]').first();
+			
+			//this isn't the best way to acquire the username, but I can't
+			//figure out any other way. In a normal case, the reported poster
+			//will be the only other link besides the reporter, or if there
+			//are linked profiles in the reported post, it will be the first
+			//link other than the reporter.
+			var reporter = post.find('a.bigusername').attr('href');
+			var reportee = post.find('a[href*="users"][href!="' + reporter + '"]').first();
+			
+			if (reportee.length > 0) {
+				var reportedUserID = User.parseUserID(reportee.attr('href'));
+				var reportedUsername = reportee.text().trim();
+			}
+			else {
+				var reportedUserID = 'Unable to determine';
+				var reportedUsername = 'Unable to determine';
+			}
+			
+			callback({
+				reportedUserID: reportedUserID,
+				reportedUsername: reportedUsername
+			});
+		});
+	},
+	
+	getStaffContacts: function(userID, callback) {
+		$.get('http://www.christianforums.com/users/' + userID, function(dom) {
+			var root = $('#collapseobj_infractions', dom);
+			
+			var contacts = [];
+			root.find('tr').not(':has(td.tcat), :has(td.thead)').each(function(i, tr) {
+				var currContact = {};
+				
+				$(tr).children('td').each(function(c, td) {					
+					//td.alt2 = warning/infraction image
+					if (c == 0) {
+						currContact.image = $(td).children('img').attr('src');
+					}
+					
+					//td.alt1 = link to post and "reason" (warning, etc)
+					if (c == 1) {
+						var post = $(td).children('.infraction_post').children('a').attr('href');
+						var thread = $(td).children('.infraction_post').children('a').text().trim();
+						var reason = $(td).children('.infraction_reason').children('em').text();
+						currContact.postLink = post;
+						currContact.thread = thread;
+						currContact.type = reason;
+					}
+					
+					//td.alt2 = date given
+					if (c == 2) {
+						currContact.dateGiven = $(td).contents().first().text().trim();
+						currContact.givenBy = $(td).find('a').text().trim();
+					}
+					
+					//td.alt1 = date expires
+					if (c == 3) {
+						var pointsAndExpires = $(td).text().trim();
+						var points = pointsAndExpires.slice(0, pointsAndExpires.indexOf('/')).trim();
+						var expires = pointsAndExpires.slice(pointsAndExpires.indexOf('/') + 1).trim();
+						currContact.points = points;
+						currContact.expires = expires;
+					}
+					
+					//td.alt2 = view link
+					if (c == 4) {
+						var viewLink = $(td).children('a').attr('href');
+						currContact.contactLink = viewLink;
+					}
+				});
+				
+				contacts.push(currContact);
+			});
+			
+			callback(contacts);
 		});
 	}
 };

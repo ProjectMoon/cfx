@@ -34,6 +34,10 @@ $(function() {
 			modhatButton();
 			reportEnhancements();
 			deletionPMs();
+			
+			if (options.automatedStaffContacts) {
+				automatedStaffContacts();
+			}
 		});
 	});	
 });
@@ -344,6 +348,71 @@ function reportEnhancements() {
 				});				
 			}
 		});
+	}
+}
+
+function automatedStaffContacts() {
+	if (Page.isReport() && Thread.hasZeroReplies()) {
+		if (confirm('This is a new report. Post staff contacts?')) {
+			
+			var contactsPreview = $('<div id="contactsPreview" title="Preview"></div>');
+			
+			contactsPreview.html('Using Internet Superpowers...');
+			
+			contactsPreview.dialog({
+				width: 650,
+				height: 250
+			});
+			
+			Reports.getReport(Thread.getID(), function(report) {
+				contactsPreview.html('e-Stalking...');
+				Reports.getStaffContacts(report.reportedUserID, function(contacts) {
+					contactsPreview.html('Sumarizing...');
+					var message = 'Staff Contacts for [b]' + report.reportedUsername + '[/b]:';
+					var preview = 'Staff Contacts for <b>' + report.reportedUsername + '</b>';
+					
+					message += '\n[indent]';
+					preview += '<ul>';
+					
+					if (contacts.length == 0) {
+						message += 'No contacts.\n';
+						preview += '<li>No contacts.</li>';
+					}
+					
+					contacts.forEach(function(contact) {
+						message += '[img]' + contact.image + '[/img] ';
+						message += '[b]' + contact.type + '[/b] - ';
+						message += '[url=' + contact.contactLink + ']';
+						message += contact.thread + '[/url]';
+						message += ' (Expires: ' + contact.expires + ')';
+						message += '\n';
+						
+						preview += '<li>';
+						preview += '<img src="' + contact.image + '" /> ';
+						preview += '<b>' + contact.type + '</b> - ';
+						preview += '<a target="_blank" href="' + contact.contactLink + '">';
+						preview += contact.thread + '</a>';
+						preview += ' (Expires: ' + contact.expires + ')';
+						preview += '</li>';
+					});
+					
+					message += '[/indent]';
+					preview += '</ul>';
+					preview += 'Does this look right? If not, hit No and post manually.<br/><br/>';
+					
+					contactsPreview.html(preview);
+					
+					$('<button>Yes</button>').appendTo(contactsPreview).click(function() {
+						contactsPreview.dialog('destroy');
+						Thread.quickReply(message);
+					});
+					
+					$('<button>No</button>').appendTo(contactsPreview).click(function() {
+						contactsPreview.dialog('destroy');
+					});
+				});
+			});
+		}
 	}
 }
 
