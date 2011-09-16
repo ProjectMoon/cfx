@@ -397,8 +397,8 @@ Thread = {
 		}
 	},
         
-	getID: function() {
-		var href = location.href;
+	getID: function(url) {
+		var href = url || location.href;
 		var end = href.lastIndexOf('/');
 		
 		//Handle pages (ex: t12345-2, for page 2 of id t12345)
@@ -484,7 +484,7 @@ Thread = {
 		});
 	},
 	
-	postReplyTo: function(threadID, text) {
+	postReplyTo: function(threadID, text, callback) {
 		$.get('http://www.christianforums.com/' + threadID, function(thread) {
 			var replyURL = $(thread).find('img.replybutton').parent().attr('href');
 			var postID = replyURL.substring(replyURL.indexOf('&p=') + 3); //is always last variable, so ok here.
@@ -500,7 +500,9 @@ Thread = {
 					};
 					
 					$.post(url, data, function(dom) {
-						alert($(dom).text());
+						//should probably figure out errors here.
+						//duplicate post, etc.
+						callback();
 					});
 				});
 			});			
@@ -568,6 +570,13 @@ Page = {
 };
 
 User = {
+	parseUserID: function(url) {
+		var end = url.lastIndexOf('/') - 1;
+		var start = url.lastIndexOf('/', end) + 1;
+		var id = url.substring(start , end);
+		return id;
+	},
+	
 	getUserID: function(callback) {
 		$.get('http://www.christianforums.com/faq.php?faq=gospel', function(dom) {
 			var href = $('#usercptools_menu', dom).find('a:contains(Your Profile)').attr('href');
@@ -688,7 +697,6 @@ Reports = {
 		$.get('http://www.christianforums.com/f414/', function(dom) {
 			var anchor = $('.pagenav', dom).first().find('a[title^="Last Page"]');
 			var count = anchor.attr('href').slice(-2).slice(0, 1);
-			callback(count);
 		});
 	},
 	
@@ -697,12 +705,16 @@ Reports = {
 			var reports = [];
 			
 			$(dom).find('a[id^="thread_title_"]').each(function(i, threadLink) {
+				var id = Thread.getID($(threadLink).attr('href'));
 				var title = $(threadLink).text();
 				var prefix = $(threadLink).prev().text();
 				var info = $(threadLink).closest('td').next().attr('title');
-				var replies = info.substring(9, info.indexOf('/', 9));
+				
+				//9 for "Replies: " and then the , separates it from the rest.
+				var replies = +info.substring(9, info.indexOf(','));
 				
 				reports.push({
+					reportID: id,
 					title: title,
 					prefix: prefix,
 					replies: replies
@@ -710,6 +722,34 @@ Reports = {
 			});
 			
 			callback(reports);
+		});
+	},
+	
+	getReport: function(reportID, callback) {
+		$.get('http://www.christianforums.com/' + reportID, function(dom) {
+			var post = $(dom).find('div[id^="edit"]').first();
+			
+			//this isn't the best way to acquire the username, but I can't
+			//figure out any other way. In a normal case, the reported poster
+			//will be the only other link besides the reporter, or if there
+			//are linked profiles in the reported post, it will be the first
+			//link other than the reporter.
+			var reporter = post.find('a.bigusername').attr('href');
+			var reportee = post.find('a[href*="users"][href!="' + reporter + '"]').first();
+			
+			if (reportee.length > 0) {
+				var reportedUserID = User.parseUserID(reportee.attr('href'));
+				var reportedUsername = reportee.text().trim();
+			}
+			else {
+				var reportedUserID = 'Unable to determine';
+				var reportedUsername = 'Unable to determine';
+			}
+			
+			callback({
+				reportedUserID: reportedUserID,
+				reportedUsername: reportedUsername
+			});
 		});
 	}
 };
