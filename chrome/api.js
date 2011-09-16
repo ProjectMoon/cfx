@@ -362,6 +362,15 @@ Thread = {
 		$('#qrform').submit(fn);
 	},
 	
+	hasZeroReplies: function() {
+		if (Page.isThread()) {
+			return $('div[id^="edit"]').length == 1;
+		}
+		else {
+			throw 'This page is not a thread.';
+		}
+	},
+	
     getQuickReplyText: function() {
 		//whether to use rich text editor iframe or the textarea.
 		if ($('#vB_Editor_QR_iframe').is(':visible')) {
@@ -750,6 +759,57 @@ Reports = {
 				reportedUserID: reportedUserID,
 				reportedUsername: reportedUsername
 			});
+		});
+	},
+	
+	getStaffContacts: function(userID, callback) {
+		$.get('http://www.christianforums.com/users/' + userID, function(dom) {
+			var root = $('#collapseobj_infractions', dom);
+			
+			var contacts = [];
+			root.find('tr').not(':has(td.tcat), :has(td.thead)').each(function(i, tr) {
+				var currContact = {};
+				
+				$(tr).children('td').each(function(c, td) {					
+					//td.alt2 = warning/infraction image
+					if (c == 0) {
+						currContact.image = $(td).children('img').attr('src');
+					}
+					
+					//td.alt1 = link to post and "reason" (warning, etc)
+					if (c == 1) {
+						var post = $(td).children('.infraction_post').children('a').attr('href');
+						var reason = $(td).children('.infraction_reason').children('em').text();
+						currContact.post = post;
+						currContact.type = reason;
+					}
+					
+					//td.alt2 = date given
+					if (c == 2) {
+						currContact.dateGiven = $(td).contents().first().text().trim();
+						currContact.givenBy = $(td).find('a').text().trim();
+					}
+					
+					//td.alt1 = date expires
+					if (c == 3) {
+						var pointsAndExpires = $(td).text().trim();
+						var points = pointsAndExpires.slice(0, pointsAndExpires.indexOf('/')).trim();
+						var expires = pointsAndExpires.slice(pointsAndExpires.indexOf('/') + 1).trim();
+						currContact.points = points;
+						currContact.expires = expires;
+					}
+					
+					//td.alt2 = view link
+					if (c == 4) {
+						var viewLink = $(td).children('a').attr('href');
+						currContact.link = viewLink;
+					}
+				});
+				
+				contacts.push(currContact);
+			});
+			
+			callback(contacts);
 		});
 	}
 };

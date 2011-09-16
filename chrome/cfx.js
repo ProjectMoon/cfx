@@ -349,7 +349,7 @@ function reportEnhancements() {
 }
 
 function automatedStaffContacts() {
-	//...
+	alert(Thread.hasZeroReplies());
 }
 
 function createUpdateNotification(version) {
